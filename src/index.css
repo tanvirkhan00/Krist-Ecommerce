@@ -1,0 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+@layer components{
+    .btn-hover{
+        @apply duration-500 ease-in-out hover:bg-black hover:text-white hover:border-yellow-500
+    }
+}
