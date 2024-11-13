@@ -24,11 +24,11 @@ const LoginSection = () => {
                             <form className='flex flex-col gap-3'>
                                 <div className='flex flex-col'>
                                     <label htmlFor="email">Email Address</label>
-                                    <input className='border-2 border-slate-300 px-2 py-2 rounded-md outline-none' type="email" placeholder='abje@gmail.com' />
+                                    <input className='border-2 border-slate-300 px-2 py-2 rounded-md outline-none borderHover' type="email" placeholder='abje@gmail.com' />
                                 </div>
                                 <div className='flex  flex-col'>
                                     <label htmlFor="pass">Password</label>
-                                    <input className='border-2 border-slate-300 px-2 py-2 rounded-md outline-none' type="password" />
+                                    <input className='border-2 border-slate-300 px-2 py-2 rounded-md outline-none borderHover' type="password" />
                                 </div>
                                 <div className='flex justify-between items-center'>
                                     <div className='flex items-center gap-2'>
@@ -37,7 +37,7 @@ const LoginSection = () => {
                                     </div>
                                     <p>Forget Password?</p>
                                 </div>
-                                <button className='border-black border-2 rounded-md py-2 text-[20px] font-semibold btn-hover'>Login</button>
+                                <button className='border-black border-2 rounded-md py-2 text-[20px] font-semibold btnHover'>Login</button>
                             </form>
                         </div>
                     </div>
