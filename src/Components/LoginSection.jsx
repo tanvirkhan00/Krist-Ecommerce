@@ -6,6 +6,7 @@ import image from "../assets/Image.png";
 
 // Icons
 import { FaHandSparkles } from "react-icons/fa";
+import { Link } from 'react-router-dom';
 
 
 const LoginSection = () => {
@@ -39,6 +40,7 @@ const LoginSection = () => {
                                 </div>
                                 <button className='border-black border-2 rounded-md py-2 text-[20px] font-semibold btnHover'>Login</button>
                             </form>
+                            <p>If You Haven't Account.  <span className='font-semibold border-b-2 border-slate-600'><Link to="/signUp"> SignUp</Link></span></p>
                         </div>
                     </div>
                 </div>
