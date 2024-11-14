@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+
+
+
 
 
 // Image
@@ -8,8 +11,12 @@ import title from "../assets/LogoWebsite.png";
 import image from "../assets/Image.png";
 
 // Icons
-import { FaHandSparkles } from "react-icons/fa";
+import { FaEyeSlash, FaHandSparkles } from "react-icons/fa";
 import { MdErrorOutline } from "react-icons/md";
+import { FcGoogle } from "react-icons/fc";
+import { FaRegEye } from "react-icons/fa";
+
+
 
 
 
@@ -19,8 +26,10 @@ const LoginSection = () => {
     let [emailErr, setEmailErr] = useState('')
     let [passWord, setPassWord] = useState('')
     let [passWordErr, setPassWordErr] = useState('')
+    let [passShow, setPassShow] =useState(false)
     const auth = getAuth();
-    let navigate = useNavigate()
+    let navigate = useNavigate();
+    const provider = new GoogleAuthProvider();
 
 
 
@@ -50,12 +59,11 @@ const LoginSection = () => {
             }
         }
         if (email && passWord && /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
-
             signInWithEmailAndPassword(auth, email, passWord)
                 .then(() => {
-                  setTimeout(() => {
-                    navigate('/')
-                  }, 2000)
+                    setTimeout(() => {
+                        navigate('/')
+                    }, 2000)
                 })
                 .catch((error) => {
                     const errorCode = error.code;
@@ -79,6 +87,21 @@ const LoginSection = () => {
         setPassWord(e.target.value)
         setPassWordErr('')
     }
+    let handleGoogle = (e) => {
+        signInWithPopup(auth, provider)
+        .then(() => {
+            navigate('/');
+            console.log("Ok");
+            
+        }).catch((error) => {
+            const errorCode = error.code;
+            console.log(errorCode);
+        });
+    }
+    let handleEye =() =>{
+        setPassShow(!passShow) 
+    }
+    console.log(passShow);
 
     return (
         <>
@@ -100,9 +123,11 @@ const LoginSection = () => {
                                         <p className='flex items-center gap-1'><span className='text-red-500'><MdErrorOutline /></span> {emailErr}</p>
                                     }
                                 </div>
-                                <div className='flex  flex-col'>
+                                <div className='flex  flex-col relative'>
                                     <label htmlFor="pass">Password</label>
-                                    <input onChange={handlePass} className='border-2 border-slate-300 px-2 py-2 rounded-md outline-none borderHover' type="password" />
+                                    <input onChange={handlePass} className='border-2 border-slate-300 px-2 py-2 rounded-md outline-none borderHover' type={passShow ? 'text' : 'password'} />
+                                    <span onClick={handleEye} className='absolute right-3 top-10 '>{passShow ? <FaEyeSlash/> :  <FaRegEye/>
+                                     }</span>
 
                                     {passWordErr &&
                                         <p className='flex items-center gap-1'><span className='text-red-500'><MdErrorOutline /></span> {passWordErr}</p>
@@ -111,13 +136,14 @@ const LoginSection = () => {
                                 <div className='flex justify-between items-center'>
                                     <div className='flex items-center gap-2'>
                                         <input type="checkbox" id='pass' />
-                                        <label id='pass'>Remember Me</label>
+                                        <label for='pass'>Remember Me</label>
                                     </div>
                                     <p>Forget Password?</p>
                                 </div>
                                 <button onClick={handleLogin} className='border-black border-2 rounded-md py-2 text-[20px] font-semibold btnHover'>Login</button>
                             </form>
                             <p>If You Haven't Account.  <span className='font-semibold border-b-2 border-slate-600'><Link to="/signUp"> SignUp</Link></span></p>
+                            <p onClick={handleGoogle} className='flex items-center gap-2 justify-center border-2 border-slate-500 py-2 rounded-md btnHover'>Login with Google <span><FcGoogle /></span></p>
                         </div>
                     </div>
                 </div>

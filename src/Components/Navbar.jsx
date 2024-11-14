@@ -34,7 +34,7 @@ const Navbar = () => {
                             <span><CiSearch/></span>
                             <span><CiHeart/></span>
                             <span><BsHandbag/></span>
-                            <button className='bg-black text-white px-3 py-1 rounded-md'><Link to="/login">Login</Link></button>
+                            <button className='border-2 border-black px-3 py-1 rounded-md btnHover'><Link to="/login">Login</Link></button>
                         </div>
                     </div>
                 </div>
