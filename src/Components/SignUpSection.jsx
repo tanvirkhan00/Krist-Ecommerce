@@ -58,6 +58,22 @@ const SignUpSection = () => {
                 setPassWordErr('Must at least 8 character')
             }
         }
+        if (email && fName && passWord && /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
+
+            createUserWithEmailAndPassword(auth, email, passWord)
+                .then(() => {
+                    setTimeout(() => {
+                        navigate('/login')
+                    }, 2000)
+                })
+                .catch((error) => {
+                    const errorCode = error.code;
+                    if (errorCode.includes('auth/email-already-in-use')) {
+                        setEmailErr('This Email Already Used')
+                    }
+                });
+        }
+
     }
 
 
@@ -78,21 +94,6 @@ const SignUpSection = () => {
         setPassWord(e.target.value)
         setPassWordErr('')
     }
-
-    
-    createUserWithEmailAndPassword(auth, email, passWord)
-        .then(() => {
-            setTimeout(() => {
-                navigate('/login')
-            },2000)
-        })
-        .catch((error) => {
-            const errorCode = error.code;
-            if(errorCode.includes('auth/email-already-in-use')) {
-                setEmailErr('This Email Already Used')
-            }
-            
-        });
 
 
     return (
