@@ -3,6 +3,8 @@ import HiroHome from '../Components/HiroHome';
 import ShopByCategory from '../Components/ShopByCategory';
 import OfferMonthly from '../Components/OfferMonthly';
 import Reviews from '../Components/Reviews';
+import InstagramStories from '../Components/InstagramStories';
+import OurService from '../Components/OurService';
 
 const Home = () => {
     return (
@@ -11,6 +13,8 @@ const Home = () => {
             <ShopByCategory />
             <OfferMonthly />
             <Reviews />
+            <InstagramStories />
+            <OurService />
         </>
     );
 };

@@ -29,7 +29,7 @@ const ShopByCategory = () => {
                         </div>
                         <div className='flex flex-wrap gap-3'>
                             {categoryData.map((item) => (
-                                <div className='basis-[9%] bg-slate-200 flex flex-col items-center text-center py-3 rounded-sm'>
+                                <div className='basis-[9%] bg-blue-400 flex flex-col items-center text-center py-3 rounded-sm upScallHover'>
                                     <img className='h-[100px]' src={item.thumbnail} alt="" />
                                     <p className='w-[80px] truncate'>{item.category}</p>
                                 </div>

@@ -5,9 +5,12 @@
 
 @layer components{
     .btnHover{
-        @apply duration-500 ease-in-out hover:bg-black hover:text-white hover:border-yellow-500
+        @apply duration-500 ease-in-out rounded-md hover:bg-black hover:text-white hover:border-yellow-500
     }
     .borderHover{
-        @apply duration-500 ease-in-out hover:border-black
+        @apply duration-500 ease-in-out  hover:border-black
+    }
+    .upScallHover{
+        @apply duration-700 ease-in-out hover:-translate-y-2
     }
 }
