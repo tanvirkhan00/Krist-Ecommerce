@@ -1,4 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
+import { apiData } from './ContextApi';
+import { Link } from 'react-router-dom';
 
 // img
 import title from "../assets/LogoWebsite.png"
@@ -7,9 +9,7 @@ import title from "../assets/LogoWebsite.png"
 import { CiSearch } from "react-icons/ci";
 import { CiHeart } from "react-icons/ci";
 import { BsHandbag } from "react-icons/bs";
-import { Link } from 'react-router-dom';
 import { IoChevronDown } from "react-icons/io5";
-import { apiData } from './ContextApi';
 
 
 const Navbar = () => {
@@ -37,7 +37,7 @@ const Navbar = () => {
                                 <li><Link to="/">Home</Link></li>
                                 <div className="relative group">
                                     <li className="flex items-center gap-1 cursor-pointer">
-                                        Shop <span><IoChevronDown /></span>
+                                       <Link to="/shop"> Shop </Link><span className='animate-bounce'><IoChevronDown /></span>
                                     </li>
                                     <div className="flex h-[300px] flex-wrap justify-center items-center gap-3 w-[500px] bg-slate-100 p-5 absolute top-8 -left-20 opacity-0 invisible group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 transition-all duration-300 ease-in-out -translate-y-5">
                                         {category.map((item) => (

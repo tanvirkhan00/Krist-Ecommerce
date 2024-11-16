@@ -4,16 +4,18 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom"
 import Home from "./Pages/Home"
 import SignUp from "./Pages/SignUp"
 import Login from "./Pages/Login"
+import Shop from "./Pages/Shop"
 
 
 
 function App() {
 
-  let router =createBrowserRouter(createRoutesFromElements(
-    <Route element={<RootLayout/>} >
-      <Route path="/" element={<Home/>} />
-      <Route path="/signUp" element={<SignUp/>} />
-      <Route path="/logIn" element={<Login/>} />
+  let router = createBrowserRouter(createRoutesFromElements(
+    <Route element={<RootLayout />} >
+      <Route path="/" element={<Home />} />
+      <Route path="/signUp" element={<SignUp />} />
+      <Route path="/logIn" element={<Login />} />
+      <Route path="/shop" element={<Shop />} />
     </Route>
   ))
 
