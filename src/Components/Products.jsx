@@ -5,10 +5,17 @@ const Products = () => {
 
     let products = useContext(apiData)
     let [category, setCategory] = useState([])
+    let [categoryItems, setCategoryItems] = useState([])
 
     useEffect(() => {
         setCategory([...new Set(products.map((item) => item.category))])
     })
+
+    let handleCategory = (cat) => {
+        let filterCategory = products.filter((item) => item.category == cat)
+        setCategoryItems(filterCategory)
+    }
+
 
 
     return (
@@ -16,13 +23,13 @@ const Products = () => {
 
             <section>
                 <div className="container">
-                    <div className='flex flex-wrap gap-3'>
+                    <div className='flex flex-wrap gap-3 justify-between'>
                         <div className='basis-[20%]'>
                             <div className='group'>
                                 <h1 className='font-semibold text-[25px] cursor-pointer'>Product Category</h1>
                                 <div className='mt-4 flex flex-col gap-2 h-0 overflow-y-scroll opacity-0 invisible -translate-y-3 duration-700 ease-in-out group-hover:opacity-100 group-hover:visible group-hover:-translate-y-0 group-hover:h-[300px]'>
                                     {category.map((item, index) => (
-                                        <div className='flex items-center gap-2'>
+                                        <div onClick={() => handleCategory(item)} className='flex items-center gap-2'>
                                             <input id={`category-${index}`} type="checkbox" />
                                             <label htmlFor={`category-${index}`}>{item}</label>
                                         </div>
@@ -97,13 +104,49 @@ const Products = () => {
                                             <input id="xxxl" type="checkbox" />
                                             <label htmlFor="xxxl">XXXL</label>
                                         </div>
-                                        
+
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div className='basis-[70%]'>
-
+                        <div className='basis-[75%]'>
+                            <div className='flex items-center justify-between'>
+                                <p>Showing of {products.length} results</p>
+                                <p>Short by latest </p>
+                            </div>
+                            <div className='mt-5'>
+                                {categoryItems.length > 0 ?
+                                    <div className='flex flex-wrap gap-x-3 gap-y-5'>
+                                        {categoryItems.map((item) => (
+                                            <div className='basis-[24%] flex flex-col gap-3'>
+                                                <div className='bg-blue-600'>
+                                                    <img className='h-[200px]' src={item.thumbnail} alt="" />
+                                                </div>
+                                                <div className='px-3'>
+                                                    <h1 className='font-semibold w-[200px] truncate'>{item.title}</h1>
+                                                    <h2>{item.category}</h2>
+                                                    <h5>$ {item.price}</h5>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    :
+                                    <div className='flex flex-wrap gap-x-3 gap-y-5'>
+                                        {products.map((item) => (
+                                            <div className='basis-[24%] flex flex-col gap-3'>
+                                                <div className='bg-blue-600'>
+                                                    <img className='h-[200px]' src={item.thumbnail} alt="" />
+                                                </div>
+                                                <div className='px-3'>
+                                                    <h1 className='font-semibold w-[200px] truncate'>{item.title}</h1>
+                                                    <h2>{item.category}</h2>
+                                                    <h5>$ {item.price}</h5>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                }
+                            </div>
                         </div>
                     </div>
                 </div>
