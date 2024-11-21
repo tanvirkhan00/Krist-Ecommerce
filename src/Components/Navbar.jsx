@@ -39,7 +39,7 @@ const Navbar = () => {
                                     <li className="flex items-center gap-1 cursor-pointer">
                                        <Link to="/shop"> Shop </Link><span className='animate-bounce'><IoChevronDown /></span>
                                     </li>
-                                    <div className="flex h-[300px] flex-wrap justify-center items-center gap-3 w-[500px] bg-slate-100 p-5 absolute top-8 -left-20 opacity-0 invisible group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 transition-all duration-300 ease-in-out -translate-y-5">
+                                    <div className="flex h-[300px] flex-wrap justify-center items-center gap-3 w-[500px] bg-slate-100 p-5 z-10 absolute top-8 -left-20 opacity-0 invisible group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 transition-all duration-300 ease-in-out -translate-y-5">
                                         {category.map((item) => (
                                             <ul>
                                                 <li className='cursor-pointer'>{item}</li>

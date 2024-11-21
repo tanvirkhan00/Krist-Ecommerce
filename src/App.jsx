@@ -5,6 +5,7 @@ import Home from "./Pages/Home"
 import SignUp from "./Pages/SignUp"
 import Login from "./Pages/Login"
 import Shop from "./Pages/Shop"
+import ProductDetails from "./Pages/ProductDetails"
 
 
 
@@ -16,6 +17,7 @@ function App() {
       <Route path="/signUp" element={<SignUp />} />
       <Route path="/logIn" element={<Login />} />
       <Route path="/shop" element={<Shop />} />
+      <Route path="/product/:id" element={<ProductDetails />} />
     </Route>
   ))
 

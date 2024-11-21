@@ -1,11 +1,19 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { apiData } from './ContextApi';
 
+// Icons
+import { CiHeart } from "react-icons/ci";
+import { IoEyeOutline } from "react-icons/io5";
+import { Link } from 'react-router-dom';
+
+
+
 const Products = () => {
 
     let products = useContext(apiData)
     let [category, setCategory] = useState([])
     let [categoryItems, setCategoryItems] = useState([])
+    const [priceRange, setPriceRange] = useState({ min: 0, max: 10 });
 
     useEffect(() => {
         setCategory([...new Set(products.map((item) => item.category))])
@@ -15,6 +23,17 @@ const Products = () => {
         let filterCategory = products.filter((item) => item.category == cat)
         setCategoryItems(filterCategory)
     }
+
+    // Handle Price Range Change
+    const handleRangeChange = (e) => {
+        const value = e.target.value;
+        setPriceRange({ ...priceRange, max: Number(value) });
+    };
+
+    // Apply Category and Price Filters Together
+    const filteredProducts = (categoryItems.length > 0 ? categoryItems : products).filter(
+        (product) => product.price >= priceRange.min && product.price <= priceRange.max
+    );
 
 
 
@@ -39,9 +58,35 @@ const Products = () => {
                             <div className='group'>
                                 <h1 className='font-semibold text-[25px] cursor-pointer'>Filter by Price</h1>
                                 <div className='mt-4 flex flex-col gap-2 opacity-0 invisible h-0 -translate-y-3 duration-700 ease-in-out group-hover:opacity-100 group-hover:visible group-hover:-translate-y-0 group-hover:h-full'>
-                                    <div>
-                                        <p>Price: $0 - $200000</p>
+                                    <div className="p-4">
+                                        {/* Price Range Display */}
+                                        <div className="mb-4">
+                                            <p className="text-lg font-medium text-gray-700">
+                                                Price: <span className="font-semibold text-blue-500">${priceRange.min}</span> - <span className="font-semibold text-blue-500">${priceRange.max}</span>
+                                            </p>
+                                        </div>
 
+                                        {/* Range Slider */}
+                                        <div className="relative w-full">
+                                            <input
+                                                type="range"
+                                                min={priceRange.min} // Minimum value for slider
+                                                max={40000} // Maximum value
+                                                step={1} // Step size for smooth updates
+                                                value={priceRange.max} // Current slider value
+                                                onChange={handleRangeChange} // Update state on change
+                                                className="w-full h-2 bg-gray-300 rounded-lg appearance-none cursor-pointer transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                            />
+                                            {/* Optional Styling for Range Value Indicator */}
+                                            <div
+                                                className="absolute top-[-1.5rem] translate-x-[-50%] bg-blue-500 text-white text-xs font-medium px-2 py-1 rounded-lg shadow"
+                                                style={{
+                                                    left: `${((priceRange.max - priceRange.min) / 40000) * 100}%`,
+                                                }}
+                                            >
+                                                ${priceRange.max}
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -111,41 +156,29 @@ const Products = () => {
                         </div>
                         <div className='basis-[75%]'>
                             <div className='flex items-center justify-between'>
-                                <p>Showing of {products.length} results</p>
+                                <p>Showing {filteredProducts.length} results of {products.length} Products</p>
                                 <p>Short by latest </p>
                             </div>
-                            <div className='mt-5'>
-                                {categoryItems.length > 0 ?
-                                    <div className='flex flex-wrap gap-x-3 gap-y-5'>
-                                        {categoryItems.map((item) => (
-                                            <div className='basis-[24%] flex flex-col gap-3'>
-                                                <div className='bg-blue-600'>
-                                                    <img className='h-[200px]' src={item.thumbnail} alt="" />
-                                                </div>
-                                                <div className='px-3'>
-                                                    <h1 className='font-semibold w-[200px] truncate'>{item.title}</h1>
-                                                    <h2>{item.category}</h2>
-                                                    <h5>$ {item.price}</h5>
-                                                </div>
+                            <div className='flex flex-wrap gap-x-3 gap-y-5 mt-5'>
+                                {filteredProducts.map((item) => (
+                                    <div key={item.id} className='basis-[24%] flex flex-col gap-3'>
+                                        <div className='bg-blue-600 relative group'>
+                                            <Link to={`/product/${item.id}`}><img className='h-[200px] w-full object-cover' src={item.thumbnail} alt={item.title} /></Link>
+                                            <div className='bg-white absolute bottom-0 w-full py-1 text-sm font-semibold  opacity-0 duration-700 translate-y-3 ease-in-out group-hover:opacity-100 group-hover:translate-y-0'>
+                                                <p className='text-center cursor-pointer'>Add To Cart</p>
                                             </div>
-                                        ))}
-                                    </div>
-                                    :
-                                    <div className='flex flex-wrap gap-x-3 gap-y-5'>
-                                        {products.map((item) => (
-                                            <div className='basis-[24%] flex flex-col gap-3'>
-                                                <div className='bg-blue-600'>
-                                                    <img className='h-[200px]' src={item.thumbnail} alt="" />
-                                                </div>
-                                                <div className='px-3'>
-                                                    <h1 className='font-semibold w-[200px] truncate'>{item.title}</h1>
-                                                    <h2>{item.category}</h2>
-                                                    <h5>$ {item.price}</h5>
-                                                </div>
+                                            <div className='absolute top-0 right-0 flex flex-col gap-3 p-5 opacity-0 -translate-y-5 duration-700 ease-in-out group-hover:opacity-100   group-hover:-translate-y-0'>
+                                                <span className='bg-white cursor-pointer p-1 rounded-full text-[20px] duration-500 ease-in-out hover:scale-110 hover:text-red-500'><CiHeart /></span>
+                                                <span className='bg-white cursor-pointer p-1 rounded-full text-[20px] duration-500 ease-in-out hover:scale-110 hover:text-red-500'><IoEyeOutline /></span>
                                             </div>
-                                        ))}
+                                        </div>
+                                        <div className='px-3'>
+                                            <h1 className='font-semibold w-[200px] truncate'>{item.title}</h1>
+                                            <h2>{item.category}</h2>
+                                            <h5>$ {item.price}</h5>
+                                        </div>
                                     </div>
-                                }
+                                ))}
                             </div>
                         </div>
                     </div>
