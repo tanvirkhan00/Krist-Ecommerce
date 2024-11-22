@@ -61,7 +61,7 @@ const Footer = () => {
                             <h1 className='font-semibold text-[25px]'>Subscribe</h1>
                             <p>Enter your email below to be the first to know about new collections and product launches.</p>
                             <div className='flex items-center justify-between border-2 border-white p-3 rounded-sm btnHover text-[20px] gap-2'>
-                                <span className='text-[30px]'><HiOutlineMail/></span>
+                                <span className='text-[30px] animate-bounce text-green-500'><HiOutlineMail/></span>
                                 <input className='bg-transparent outline-none' type="text" placeholder='Your Email' />
                                 <span><FaRegArrowAltCircleRight /></span>
                             </div>

@@ -1,10 +1,12 @@
 import React, { useContext } from 'react';
 import { useParams } from 'react-router';
 import { apiData } from './ContextApi';
+import RelatedProducts from './RelatedProducts';
 
 // Icons
 import { FaStar } from "react-icons/fa";
 import { CiHeart } from "react-icons/ci";
+import TabVar from './TabVar';
 
 
 
@@ -15,7 +17,7 @@ const SingleProduct = () => {
 
     // If products haven't loaded yet, show a loading message
     if (!products || products.length === 0) {
-        return <p>Loading...</p>;
+        return <p className='text-center py-10'>Loading...</p>;
     }
 
     // Find the product based on the ID from the URL
@@ -23,10 +25,10 @@ const SingleProduct = () => {
 
     // Handle case where the product is not found
     if (!product) {
-        return <p>Product not found!</p>;
+        return <p className='text-center py-10'>Product not found!</p>;
     }
 
-
+    let filterCategory = products.filter((item) => item.category === product.category)
 
 
     return (
@@ -80,8 +82,8 @@ const SingleProduct = () => {
                                 </div>
                             </div>
                             <div className='mt-2 flex items-center gap-5'>
-                                <button className='border-2 border-black px-7 py-3 rounded-sm btnHover'>Add To Cart</button>
-                                <span className='text-[25px] border-2 border-black p-2 rounded-md duration-700 ease-in-out hover:scale-110 hover:text-red-500'><CiHeart/></span>
+                                <button className='border-2 border-black px-14 py-3 rounded-sm btnHover'>Add To Cart</button>
+                                <span className='text-[25px] border-2 border-black p-2 rounded-md duration-700 ease-in-out hover:scale-110 hover:text-red-500'><CiHeart /></span>
                             </div>
                             <div className='flex gap-5 mt-3'>
                                 <p className='border-2 border-black rounded-md px-5 py-3 text-red-500'>{product.warrantyInformation}</p>
@@ -91,6 +93,8 @@ const SingleProduct = () => {
                     </div>
                 </div>
             </section>
+            <TabVar />
+            <RelatedProducts filterCategory={filterCategory} />
 
         </>
     );

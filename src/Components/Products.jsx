@@ -1,10 +1,10 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { apiData } from './ContextApi';
+import { Link } from 'react-router-dom';
 
 // Icons
 import { CiHeart } from "react-icons/ci";
 import { IoEyeOutline } from "react-icons/io5";
-import { Link } from 'react-router-dom';
 
 
 
@@ -163,8 +163,8 @@ const Products = () => {
                                 {filteredProducts.map((item) => (
                                     <div key={item.id} className='basis-[24%] flex flex-col gap-3'>
                                         <div className='bg-blue-600 relative group'>
-                                            <Link to={`/product/${item.id}`}><img className='h-[200px] w-full object-cover' src={item.thumbnail} alt={item.title} /></Link>
-                                            <div className='bg-white absolute bottom-0 w-full py-1 text-sm font-semibold  opacity-0 duration-700 translate-y-3 ease-in-out group-hover:opacity-100 group-hover:translate-y-0'>
+                                            <Link to={`/product/${item.id}`}><img className='h-[200px] w-full' src={item.thumbnail} alt={item.title} /></Link>
+                                            <div className='bg-yellow-500 absolute bottom-0 w-full py-1 text-sm font-semibold  opacity-0 duration-700 translate-y-3 ease-in-out group-hover:opacity-100 group-hover:translate-y-0'>
                                                 <p className='text-center cursor-pointer'>Add To Cart</p>
                                             </div>
                                             <div className='absolute top-0 right-0 flex flex-col gap-3 p-5 opacity-0 -translate-y-5 duration-700 ease-in-out group-hover:opacity-100   group-hover:-translate-y-0'>
