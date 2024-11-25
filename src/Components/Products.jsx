@@ -1,10 +1,12 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { apiData } from './ContextApi';
 import { Link } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 
 // Icons
 import { CiHeart } from "react-icons/ci";
 import { IoEyeOutline } from "react-icons/io5";
+import { addToCart } from './Slice/productSlice';
 
 
 
@@ -14,6 +16,7 @@ const Products = () => {
     let [category, setCategory] = useState([])
     let [categoryItems, setCategoryItems] = useState([])
     const [priceRange, setPriceRange] = useState({ min: 0, max: 10 });
+    const dispatch = useDispatch()
 
     useEffect(() => {
         setCategory([...new Set(products.map((item) => item.category))])
@@ -34,6 +37,12 @@ const Products = () => {
     const filteredProducts = (categoryItems.length > 0 ? categoryItems : products).filter(
         (product) => product.price >= priceRange.min && product.price <= priceRange.max
     );
+
+    // Add to Cart
+    let handleCart = (itemId) => {
+        dispatch(addToCart({ ...itemId, qty: 1 }))
+    }
+
 
 
 
@@ -161,11 +170,11 @@ const Products = () => {
                             </div>
                             <div className='flex flex-wrap gap-x-3 gap-y-5 mt-5'>
                                 {filteredProducts.map((item) => (
-                                    <div key={item.id} className='basis-[24%] flex flex-col gap-3'>
-                                        <div className='bg-blue-600 relative group'>
-                                            <Link to={`/product/${item.id}`}><img className='h-[200px] w-full' src={item.thumbnail} alt={item.title} /></Link>
+                                    <div className='basis-[24%] flex flex-col gap-3 shadow-sm shadow-black pb-2'>
+                                        <div className='bg-slate-300 relative group'>
+                                            <Link to={`/product/${item.id}`}><img className='h-[150px] w-[150px] mx-auto' src={item.thumbnail} alt={item.title} /></Link>
                                             <div className='bg-yellow-500 absolute bottom-0 w-full py-1 text-sm font-semibold  opacity-0 duration-700 translate-y-3 ease-in-out group-hover:opacity-100 group-hover:translate-y-0'>
-                                                <p className='text-center cursor-pointer'>Add To Cart</p>
+                                                <p onClick={() => handleCart(item)} className='text-center cursor-pointer'>Add To Cart</p>
                                             </div>
                                             <div className='absolute top-0 right-0 flex flex-col gap-3 p-5 opacity-0 -translate-y-5 duration-700 ease-in-out group-hover:opacity-100   group-hover:-translate-y-0'>
                                                 <span className='bg-white cursor-pointer p-1 rounded-full text-[20px] duration-500 ease-in-out hover:scale-110 hover:text-red-500'><CiHeart /></span>

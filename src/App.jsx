@@ -6,6 +6,7 @@ import SignUp from "./Pages/SignUp"
 import Login from "./Pages/Login"
 import Shop from "./Pages/Shop"
 import ProductDetails from "./Pages/ProductDetails"
+import FilterCategory from "./Pages/FilterCategory"
 
 
 
@@ -18,6 +19,7 @@ function App() {
       <Route path="/logIn" element={<Login />} />
       <Route path="/shop" element={<Shop />} />
       <Route path="/product/:id" element={<ProductDetails />} />
+      <Route path="/category/:categoryName" element={<FilterCategory />} />
     </Route>
   ))
 

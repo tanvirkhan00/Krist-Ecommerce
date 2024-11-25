@@ -1,10 +1,12 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { apiData } from './ContextApi';
+import { useNavigate } from 'react-router';
 
 const ShopByCategory = () => {
 
     let products = useContext(apiData)
     const [categoryData, setCategoryData] = useState([]);
+    let navigate =useNavigate()
 
     useEffect(() => {
         const categoriesWithImages =[
@@ -16,7 +18,9 @@ const ShopByCategory = () => {
         setCategoryData(categoriesWithImages)
     },[products])
     
-
+    let handleCategory =(item) => {
+        navigate(`/category/${item.category}`);
+    }
 
     return (
         <>
@@ -29,7 +33,7 @@ const ShopByCategory = () => {
                         </div>
                         <div className='flex flex-wrap gap-3'>
                             {categoryData.map((item) => (
-                                <div className='basis-[9%] bg-blue-400 flex flex-col items-center text-center py-3 rounded-sm upScallHover'>
+                                <div onClick={() =>handleCategory(item)} className='basis-[9%] bg-blue-400 flex flex-col items-center text-center py-3 rounded-sm upScallHover'>
                                     <img className='h-[100px]' src={item.thumbnail} alt="" />
                                     <p className='w-[80px] truncate'>{item.category}</p>
                                 </div>

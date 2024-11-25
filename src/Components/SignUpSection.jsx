@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
 
 
 // Image
@@ -62,9 +62,19 @@ const SignUpSection = () => {
 
             createUserWithEmailAndPassword(auth, email, passWord)
                 .then(() => {
+ 
                     setTimeout(() => {
                         navigate('/login')
                     }, 2000)
+                    sendEmailVerification(auth.currentUser)
+                    .then(() => {
+                        console.log("ok");
+                    })
+                    .catch((error) => {
+                        const errorCode = error.code;
+                        console.log(errorCode);
+                        
+                    });
                 })
                 .catch((error) => {
                     const errorCode = error.code;

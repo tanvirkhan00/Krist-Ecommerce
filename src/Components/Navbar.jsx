@@ -9,6 +9,10 @@ import title from "../assets/LogoWebsite.png"
 import { CiHeart } from "react-icons/ci";
 import { BsHandbag } from "react-icons/bs";
 import { IoChevronDown } from "react-icons/io5";
+import { useDispatch, useSelector } from 'react-redux';
+import { IoTrashOutline } from "react-icons/io5";
+import { deletProduct } from './Slice/productSlice';
+
 
 
 const Navbar = () => {
@@ -18,7 +22,8 @@ const Navbar = () => {
     const [cartShow, setCartShow] = useState(false)
     const [searchItem, setSearchItem] = useState([])
     const [inputValue, setInputValue] = useState()
-    let navigate =useNavigate()
+    let navigate = useNavigate()
+    let dispatch =useDispatch()
 
     // filter Category
     useEffect(() => {
@@ -42,16 +47,19 @@ const Navbar = () => {
         }
     }
 
-    let handleNavigate =(itemId) => {
+    let handleNavigate = (itemId) => {
         navigate(`/product/${itemId}`)
         setInputValue("")
         setSearchItem([])
     }
 
-    if (!searchItem) {
-        return <p className="text-center pt-3">Please Wait....</p>;
+    // Cart 
+    let cartQuantity = useSelector((state) => state.product.CartItem)
+    let cartLenth =cartQuantity.length
+
+    let handleTrash =(trash) => {
+        dispatch(deletProduct(trash))
     }
-    
 
 
 
@@ -92,7 +100,7 @@ const Navbar = () => {
                                 {searchItem.length > 0 &&
                                     <div className='absolute bg-white border-2 border-black h-[400px] w-[250px] py-5 px-3 overflow-y-scroll flex flex-col gap-3'>
                                         {searchItem.map((item) => (
-                                            <div onClick={() =>handleNavigate(item.id)} className='flex items-center gap-2 shadow-sm shadow-black'>
+                                            <div onClick={() => handleNavigate(item.id)} className='flex items-center gap-2 shadow-sm shadow-black'>
                                                 <img className='h-[50px]' src={item.thumbnail} alt="" />
                                                 <div className='flex flex-col text-[14px]'>
                                                     <h1 className='font-semibold w-[130px] truncate'>{item.title}</h1>
@@ -108,13 +116,22 @@ const Navbar = () => {
                             <button className='border-2 border-black px-3 py-1 rounded-md btnHover'><Link to="/login">Login</Link></button>
 
                             {cartShow &&
-                                <div className='absolute  bg-white border-2 border-black w-[300px] h-[500px] top-10 right-0'>
-                                    <div>
-                                        <img src="" alt="" />
-                                        <div>
-                                            <h1></h1>
-                                            <p></p>
-                                        </div>
+                                <div className='absolute shadow-md shadow-black bg-white w-[300px] h-[500px] overflow-y-scroll top-10 right-0 z-50 p-2'>
+                                    <h1 className="text-[14px] text-green-700">You Have {cartLenth} Items in Your Cart</h1>
+                                    <h1 className="text-center font-semibold text-[25px] text-blue-800">Cart Items</h1>
+                                    <div className="flex flex-col gap-3 mt-3">
+                                        {cartQuantity.map((item) => (
+                                            <div className='flex items-center gap-2 shadow-sm shadow-black p-1 cursor-pointer duration-700 ease-in-out group  hover:-translate-y-2'>
+                                                <img className='h-[60px] w-[60px]' src={item.thumbnail} alt="" />
+                                                <div>
+                                                    <h1 className="text-[14px] font-semibold w-[175px] truncate">{item.title}</h1>
+                                                    <p className="text-[14px] text-red-500">$ {item.price} </p>
+                                                </div>
+                                                <div onClick={()=>handleTrash(item)} className='absolute right-0 pr-2 opacity-0 duration-700 ease-in-out text-[16px] hover:text-red-500 hover:scale-110 group-hover:opacity-100'>
+                                                    <span><IoTrashOutline/></span>
+                                                </div>
+                                            </div>
+                                        ))}
                                     </div>
                                 </div>
                             }

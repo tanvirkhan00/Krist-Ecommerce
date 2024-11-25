@@ -60,19 +60,20 @@ const LoginSection = () => {
         }
         if (email && passWord && /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
             signInWithEmailAndPassword(auth, email, passWord)
-                .then(() => {
-                    setTimeout(() => {
-                        navigate('/')
-                    }, 2000)
+                .then((user) => {
+                    if(user.user.emailVerified === true){
+                        setTimeout(() => {
+                            navigate('/')
+                        }, 2000)
+                    } else {
+                        setPassWordErr('Please verify your email')
+                    }
                 })
                 .catch((error) => {
                     const errorCode = error.code;
-                    if (errorCode.includes('auth/too-many-requests')) {
-                        setPassWordErr('Wrong Password');
-                    } else if (errorCode.includes('auth/invalid-credential')) {
-                        setPassWordErr('Please Input Valid Password');
-                    } else if (errorCode.includes('auth/invalid-email')) {
-                        setEmailErr('Wrong Email');
+                    
+                    if (errorCode.includes('auth/invalid-credential')) {
+                        setPassWordErr('Please Input Valid Credentials');
                     }
                 });
         }
@@ -91,17 +92,14 @@ const LoginSection = () => {
         signInWithPopup(auth, provider)
         .then(() => {
             navigate('/');
-            console.log("Ok");
             
         }).catch((error) => {
             const errorCode = error.code;
-            console.log(errorCode);
         });
     }
     let handleEye =() =>{
         setPassShow(!passShow) 
     }
-    console.log(passShow);
 
     return (
         <>
