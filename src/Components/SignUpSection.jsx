@@ -62,18 +62,14 @@ const SignUpSection = () => {
 
             createUserWithEmailAndPassword(auth, email, passWord)
                 .then(() => {
- 
                     setTimeout(() => {
                         navigate('/login')
                     }, 2000)
                     sendEmailVerification(auth.currentUser)
                     .then(() => {
-                        console.log("ok");
                     })
                     .catch((error) => {
                         const errorCode = error.code;
-                        console.log(errorCode);
-                        
                     });
                 })
                 .catch((error) => {

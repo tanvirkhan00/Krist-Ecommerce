@@ -1,12 +1,13 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { apiData } from './ContextApi';
 import { Link } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 // Icons
 import { CiHeart } from "react-icons/ci";
 import { IoEyeOutline } from "react-icons/io5";
 import { addToCart } from './Slice/productSlice';
+import { getAuth } from 'firebase/auth';
 
 
 
@@ -17,32 +18,44 @@ const Products = () => {
     let [categoryItems, setCategoryItems] = useState([])
     const [priceRange, setPriceRange] = useState({ min: 0, max: 10 });
     const dispatch = useDispatch()
-
+    
     useEffect(() => {
         setCategory([...new Set(products.map((item) => item.category))])
     })
-
+    
     let handleCategory = (cat) => {
         let filterCategory = products.filter((item) => item.category == cat)
         setCategoryItems(filterCategory)
     }
-
+    
     // Handle Price Range Change
     const handleRangeChange = (e) => {
         const value = e.target.value;
         setPriceRange({ ...priceRange, max: Number(value) });
     };
-
+    
     // Apply Category and Price Filters Together
     const filteredProducts = (categoryItems.length > 0 ? categoryItems : products).filter(
         (product) => product.price >= priceRange.min && product.price <= priceRange.max
     );
-
+    
+    let account =useSelector((state) =>state.product.Account)
     // Add to Cart
     let handleCart = (itemId) => {
-        dispatch(addToCart({ ...itemId, qty: 1 }))
-    }
+        const auth =getAuth()
+        const user =auth.currentUser
 
+        if(user.emailVerified == true) {
+            dispatch(addToCart({ ...itemId, qty: 1 }))
+        } else {
+            alert("Please Create Account")
+        }
+        
+    }
+    
+    
+    
+    
 
 
 

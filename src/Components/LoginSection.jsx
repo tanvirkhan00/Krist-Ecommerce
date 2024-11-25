@@ -15,6 +15,8 @@ import { FaEyeSlash, FaHandSparkles } from "react-icons/fa";
 import { MdErrorOutline } from "react-icons/md";
 import { FcGoogle } from "react-icons/fc";
 import { FaRegEye } from "react-icons/fa";
+import { useDispatch } from 'react-redux';
+import { clientAccount } from './Slice/productSlice';
 
 
 
@@ -30,6 +32,7 @@ const LoginSection = () => {
     const auth = getAuth();
     let navigate = useNavigate();
     const provider = new GoogleAuthProvider();
+    let dispatch =useDispatch()
 
 
 
@@ -65,13 +68,14 @@ const LoginSection = () => {
                         setTimeout(() => {
                             navigate('/')
                         }, 2000)
+                        dispatch(clientAccount(user.user))
                     } else {
                         setPassWordErr('Please verify your email')
                     }
+                   
                 })
                 .catch((error) => {
                     const errorCode = error.code;
-                    
                     if (errorCode.includes('auth/invalid-credential')) {
                         setPassWordErr('Please Input Valid Credentials');
                     }

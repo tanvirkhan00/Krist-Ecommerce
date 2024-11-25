@@ -38,7 +38,6 @@ const Navbar = () => {
     // search
     let handleSearch = (e) => {
         setSearchItem(e.target.value)
-
         if (e.target.value === "") {
             setSearchItem([])
         } else {
@@ -55,6 +54,7 @@ const Navbar = () => {
 
     // Cart 
     let cartQuantity = useSelector((state) => state.product.CartItem)
+    
     let cartLenth =cartQuantity.length
 
     let handleTrash =(trash) => {
