@@ -23,7 +23,7 @@ const Navbar = () => {
     const [searchItem, setSearchItem] = useState([])
     const [inputValue, setInputValue] = useState()
     let navigate = useNavigate()
-    let dispatch =useDispatch()
+    let dispatch = useDispatch()
 
     // filter Category
     useEffect(() => {
@@ -54,11 +54,15 @@ const Navbar = () => {
 
     // Cart 
     let cartQuantity = useSelector((state) => state.product.CartItem)
-    
-    let cartLenth =cartQuantity.length
 
-    let handleTrash =(trash) => {
+    let cartLenth = cartQuantity.length
+
+    let handleTrash = (trash) => {
         dispatch(deletProduct(trash))
+    }
+
+    let handleCategory = (item) => {
+        navigate(`/category/${item}`);
     }
 
 
@@ -84,7 +88,7 @@ const Navbar = () => {
                                     <div className="flex h-[300px] flex-wrap justify-center items-center gap-3 w-[500px] bg-slate-100 p-5 z-10 absolute top-8 -left-20 opacity-0 invisible group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 transition-all duration-300 ease-in-out -translate-y-5">
                                         {category.map((item) => (
                                             <ul>
-                                                <li className='cursor-pointer'>{item}</li>
+                                                <li onClick={() => handleCategory(item)} className='cursor-pointer'>{item}</li>
                                             </ul>
                                         ))}
                                     </div>
@@ -94,9 +98,9 @@ const Navbar = () => {
                                 <li>Contact Us</li>
                             </ul>
                         </div>
-                        <div className='relative flex items-center gap-3 text-[20px]'>
+                        <div className='relative flex items-center gap-3'>
                             <div>
-                                <input value={inputValue} onChange={handleSearch} className='border-2 border-black outline-none rounded-md px-2 py-2 text-[16px]' placeholder='Search Your Product' type="search" />
+                                <input value={inputValue} onChange={handleSearch} className='border-2 border-black outline-none rounded-md px-2 py-1 text-[16px]' placeholder='Search Your Product' type="search" />
                                 {searchItem.length > 0 &&
                                     <div className='absolute bg-white border-2 border-black h-[400px] w-[250px] py-5 px-3 overflow-y-scroll flex flex-col gap-3'>
                                         {searchItem.map((item) => (
@@ -112,9 +116,11 @@ const Navbar = () => {
                                 }
                             </div>
                             <span className='cursor-pointer border-2 border-black rounded-md px-2 py-2 btnHover'><CiHeart /></span>
-                            <span className='cursor-pointer border-2 border-black rounded-md px-2 py-2 btnHover' onClick={handleCart}><BsHandbag /></span>
+                            <div className='border-2 border-black rounded-md px-2 py-2 btnHover cursor-pointer relative'>
+                                <span className='' onClick={handleCart}><BsHandbag /></span>
+                                <span className='absolute -top-6 -right-2 bg-black text-white w-[25px] h-[25px] rounded-full flex justify-center items-center'>{cartLenth}</span>
+                            </div>
                             <button className='border-2 border-black px-3 py-1 rounded-md btnHover'><Link to="/login">Login</Link></button>
-
                             {cartShow &&
                                 <div className='absolute shadow-md shadow-black bg-white w-[300px] h-[500px] overflow-y-scroll top-10 right-0 z-50 p-2'>
                                     <h1 className="text-[14px] text-green-700">You Have {cartLenth} Items in Your Cart</h1>
@@ -125,10 +131,10 @@ const Navbar = () => {
                                                 <img className='h-[60px] w-[60px]' src={item.thumbnail} alt="" />
                                                 <div>
                                                     <h1 className="text-[14px] font-semibold w-[175px] truncate">{item.title}</h1>
-                                                    <p className="text-[14px] text-red-500">$ {item.price} </p>
+                                                    <p className="text-[14px] text-red-500">$ <span className='text-black'>{item.qty}</span> * {item.price} </p>
                                                 </div>
-                                                <div onClick={()=>handleTrash(item)} className='absolute right-0 pr-2 opacity-0 duration-700 ease-in-out text-[16px] hover:text-red-500 hover:scale-110 group-hover:opacity-100'>
-                                                    <span><IoTrashOutline/></span>
+                                                <div onClick={() => handleTrash(item)} className='absolute right-0 pr-2 opacity-0 duration-700 ease-in-out text-[16px] hover:text-red-500 hover:scale-110 group-hover:opacity-100'>
+                                                    <span><IoTrashOutline /></span>
                                                 </div>
                                             </div>
                                         ))}

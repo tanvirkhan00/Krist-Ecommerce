@@ -8,13 +8,13 @@ export const productSlice = createSlice({
   },
   reducers: { 
         addToCart:((state, action) => {
-          let find =state.CartItem.findIndex((item) => item.id == action.payload)
+          let findIndex =state.CartItem.findIndex((item) => item.id === action.payload.id)
           
-          if( find == -1 ) {
+          if( findIndex === -1 ) {
             state.CartItem = [...state.CartItem, action.payload]
             localStorage.setItem("cart", JSON.stringify(state.CartItem))
           } else {
-            state.CartItem[find].qty += 1
+            state.CartItem[findIndex].qty += 1
             localStorage.setItem("cart", JSON.stringify(state.CartItem))
           }
         }),

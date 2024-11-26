@@ -14,8 +14,8 @@ const CategoryItem = () => {
 
     const categoryItem = product.filter((item) => item.category === categoryName)
 
-    if (!categoryItem) {
-        return <p className='text-center pt-5'>Please Wait ....</p>
+    if (!product || product.length === 0) {
+        return <p className='text-center pt-5'>Loading products...</p>;
     }
 
 
