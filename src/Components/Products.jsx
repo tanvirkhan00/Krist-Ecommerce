@@ -2,12 +2,12 @@ import React, { useContext, useEffect, useState } from 'react';
 import { apiData } from './ContextApi';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import { getAuth } from 'firebase/auth';
+import { addToCart } from './Slice/productSlice';
 
 // Icons
 import { CiHeart } from "react-icons/ci";
 import { IoEyeOutline } from "react-icons/io5";
-import { addToCart } from './Slice/productSlice';
-import { getAuth } from 'firebase/auth';
 
 
 
@@ -39,18 +39,20 @@ const Products = () => {
         (product) => product.price >= priceRange.min && product.price <= priceRange.max
     );
     
+    // Import Account
     let account =useSelector((state) =>state.product.Account)
     // Add to Cart
     let handleCart = (itemId) => {
         const auth =getAuth()
         const user =auth.currentUser
 
-        if(user.emailVerified == true) {
-            dispatch(addToCart({ ...itemId, qty: 1 }))
-        } else {
+        if(!user) {
             alert("Please Create Account")
+        } else if(user.emailVerified == false){
+            alert("Please Verify Gmail")
+        } else{
+            dispatch(addToCart({ ...itemId, qty: 1 }))
         }
-        
     }
     
     
@@ -63,7 +65,7 @@ const Products = () => {
         <>
 
             <section>
-                <div className="container">
+                <div className="container mt-[100px]">
                     <div className='flex flex-wrap gap-3 justify-between'>
                         <div className='basis-[20%]'>
                             <div className='group'>

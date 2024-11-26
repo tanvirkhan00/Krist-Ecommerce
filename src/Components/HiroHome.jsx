@@ -11,7 +11,7 @@ const HiroHome = () => {
     return (
         <>
             <section>
-                <div className="container">
+                <div className="container mt-[100px]">
                     <div className='flex items-center flex-wrap gap-4'>
                         <div className='basis-[47%] flex flex-col gap-3'>
                             <h3 className='font-semibold text-[25px]'>Classic Exclusive</h3>

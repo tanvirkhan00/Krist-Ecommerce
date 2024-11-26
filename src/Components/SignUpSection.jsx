@@ -106,7 +106,7 @@ const SignUpSection = () => {
         <>
 
             <section>
-                <div className="container">
+                <div className="container mt-[100px]">
                     <div className='flex items-center flex-wrap gap-10'>
                         <div className='md:basis-[55%] relative'>
                             <img className='absolute top-10 left-10' src={title} alt="" />
