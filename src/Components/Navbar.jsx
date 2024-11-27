@@ -72,9 +72,7 @@ const Navbar = () => {
     }
 
     // Total Price
-    let total =cartQuantity.reduce((acc, curr) => {
-        return acc + (curr.price * curr.qty)
-    },0)
+    let total = cartQuantity.reduce((acc, curr) => acc + (curr.price * curr.qty) , 0)
 
 
 
@@ -83,11 +81,11 @@ const Navbar = () => {
 
     return (
         <>
-            <nav className='fixed w-full z-50 left-0  top-0 bg-white bg-opacity-90'>
+            <nav className='fixed w-full z-50 left-0  top-0 bg-white bg-opacity-90 border-b-2 border-blue-500'>
                 <div className="container">
                     <div className='flex items-center justify-between h-[100px]'>
-                        <div>
-                            <Link to="/"> <img src={title} alt="" /></Link>
+                        <div className=''>
+                            <Link to="/"> <img className='duration-700 ease-in-out hover:scale-105 hover:shadow-custom-shadow' src={title} alt="" /></Link>
                         </div>
                         <div>
                             <ul className='flex items-center gap-4'>
@@ -137,7 +135,7 @@ const Navbar = () => {
                                     <h1 className="text-[14px] text-green-700">You Have {cartLenth} Items in Your Cart</h1>
                                     <h1 className="text-center font-semibold text-[25px] text-blue-800">Cart Items</h1>
                                     <div className="flex flex-col gap-3 mt-3 h-[300px] overflow-y-scroll">
-                                        {cartQuantity.map((item,index) => (
+                                        {cartQuantity.map((item, index) => (
                                             <div className='flex items-center gap-2 shadow-sm shadow-black p-1 cursor-pointer duration-700 ease-in-out group  hover:-translate-y-2'>
                                                 <div onClick={() => handlecartNavigate(item)} className='flex items-center gap-2'>
                                                     <img className='h-[60px] w-[60px]' src={item.thumbnail} alt="" />

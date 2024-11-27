@@ -14,7 +14,11 @@ export default {
       center: true,
       padding:"1rem",
     },
-    extend: {},
+    extend: {
+      boxShadow:{
+        'custom-shadow':'0 5px 10px rgba(0, 0, 0, 1)',
+      }
+    },
   },
   plugins: [],
 }
