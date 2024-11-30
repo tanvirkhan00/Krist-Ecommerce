@@ -5,6 +5,7 @@ import { FiArrowRight } from "react-icons/fi";
 
 // Image
 import woman from "../assets/womanShoping.png"
+import { Link } from 'react-router-dom';
 
 
 const HiroHome = () => {
@@ -17,7 +18,7 @@ const HiroHome = () => {
                             <h3 className='font-semibold text-[25px]'>Classic Exclusive</h3>
                             <h1 className='text-[45px] font-bold font-serif text-blue-500'>Woman's Collection</h1>
                             <p className='font-semibold text-[25px]'>Upto 40% Off</p>
-                            <button className='flex items-center gap-2 border-2 border-black py-2 px-5 max-w-fit btnHover rounded-md'>Shop Now <span><FiArrowRight/></span></button>
+                            <button className='flex items-center gap-2 border-2 border-black py-2 px-5 max-w-fit btnHover rounded-md'><Link to="/shop">Shop Now </Link><span><FiArrowRight/></span></button>
                         </div>
                         <div className='basis-[47%]'>
                             <img src={woman} alt="" />

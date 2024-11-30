@@ -3,6 +3,7 @@ import { FaCircleArrowRight } from 'react-icons/fa6';
 
 // Image
 import womanImage from "../assets/womanShoping2.png"
+import { Link } from 'react-router-dom';
 
 const OfferMonthly = () => {
     return (
@@ -32,7 +33,7 @@ const OfferMonthly = () => {
                                     <h4 className='font-semibold'>Secs</h4>
                                 </div>
                             </div>
-                            <button className='flex items-center gap-2 border-2 border-black rounded-md max-w-fit px-6 py-4 font-semibold btnHover'>View All Products <span><FaCircleArrowRight/></span></button>
+                            <button className='flex items-center gap-2 border-2 border-black rounded-md max-w-fit px-6 py-4 font-semibold btnHover'><Link to="/shop">View All Products</Link> <span><FaCircleArrowRight/></span></button>
                         </div>
                         <div className='basis-[48%]'>
                             <img src={womanImage} alt="" />

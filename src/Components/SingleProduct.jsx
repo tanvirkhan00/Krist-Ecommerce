@@ -8,7 +8,7 @@ import TabVar from './TabVar';
 // Icons
 import { FaStar } from "react-icons/fa";
 import { CiHeart } from "react-icons/ci";
-import { addToCart } from './Slice/productSlice';
+import { addToCart, WishList } from './Slice/productSlice';
 import { getAuth } from 'firebase/auth';
 
 
@@ -47,6 +47,11 @@ const SingleProduct = () => {
         } else {
             dispatch(addToCart({ ...itemId, qty: 1 }))
         }
+    }
+
+    // WishList 
+    let handleWishList = (itemId) => {
+        dispatch(WishList({ ...itemId, qty: 1 }))
     }
 
 
@@ -102,7 +107,7 @@ const SingleProduct = () => {
                             </div>
                             <div className='mt-2 flex items-center gap-5'>
                                 <button onClick={() => handleCart(product)} className='border-2 border-black px-14 py-3 rounded-sm btnHover'>Add To Cart</button>
-                                <span className='text-[25px] border-2 border-black p-2 rounded-md duration-700 ease-in-out hover:scale-110 hover:text-red-500'><CiHeart /></span>
+                                <span onClick={() => handleWishList(product)} className='text-[25px] border-2 border-black p-2 rounded-md duration-700 ease-in-out hover:scale-110 hover:text-red-500'><CiHeart /></span>
                             </div>
                             <div className='flex gap-5 mt-3'>
                                 <p className='border-2 border-black rounded-md px-5 py-3 text-red-500'>{product.warrantyInformation}</p>

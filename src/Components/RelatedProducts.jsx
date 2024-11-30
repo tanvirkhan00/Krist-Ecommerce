@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { getAuth } from 'firebase/auth';
-import { addToCart } from './Slice/productSlice';
+import { addToCart, WishList } from './Slice/productSlice';
 import { useDispatch, useSelector } from 'react-redux';
 
 // Icons
@@ -20,13 +20,18 @@ const RelatedProducts = ({ filterCategory }) => {
         let auth = getAuth()
         let user = auth.currentUser
 
-        if(!user) {
+        if (!user) {
             alert("Please Create Account")
-        } else if(user.emailVerified == false){
+        } else if (user.emailVerified == false) {
             alert("Please Verify Gmail")
-        } else{
+        } else {
             dispatch(addToCart({ ...itemId, qty: 1 }))
         }
+    }
+
+    // WishList 
+    let handleWishList = (itemId) => {
+        dispatch(WishList({ ...itemId, qty: 1 }))
     }
 
     return (
@@ -47,7 +52,7 @@ const RelatedProducts = ({ filterCategory }) => {
                                             <p onClick={() => handleCart(item)} className='text-center cursor-pointer'>Add To Cart</p>
                                         </div>
                                         <div className='absolute top-0 right-0 flex flex-col gap-3 p-5 opacity-0 -translate-y-5 duration-700 ease-in-out group-hover:opacity-100   group-hover:-translate-y-0'>
-                                            <span className='bg-white cursor-pointer p-1 rounded-full text-[20px] duration-500 ease-in-out hover:scale-110 hover:text-red-500'><CiHeart /></span>
+                                            <span onClick={() => handleWishList(item)} className='bg-white cursor-pointer p-1 rounded-full text-[20px] duration-500 ease-in-out hover:scale-110 hover:text-red-500'><CiHeart /></span>
                                             <span className='bg-white cursor-pointer p-1 rounded-full text-[20px] duration-500 ease-in-out hover:scale-110 hover:text-red-500'><IoEyeOutline /></span>
                                         </div>
                                     </div>

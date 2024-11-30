@@ -1,9 +1,11 @@
 import React from 'react';
-import { FiMinus, FiPlus } from 'react-icons/fi';
-import { GoTrash } from 'react-icons/go';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
 import { Decrement, deletProduct, Increment } from './Slice/productSlice';
+
+// Icons
+import { FiMinus, FiPlus } from 'react-icons/fi';
+import { GoTrash } from 'react-icons/go';
 
 const CheckOutComponent = () => {
     const dispatch = useDispatch()

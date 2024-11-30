@@ -5,6 +5,7 @@ export const productSlice = createSlice({
   initialState: {
     CartItem: localStorage.getItem("cart") ? JSON.parse(localStorage.getItem("cart")) : [],
     Account: localStorage.getItem("clientId") ? JSON.parse(localStorage.getItem("clientId")) : [],
+    WishListItem: localStorage.getItem("wishcart") ? JSON.parse(localStorage.getItem("wishcart")) : []
   },
   reducers: {
     addToCart: ((state, action) => {
@@ -35,12 +36,27 @@ export const productSlice = createSlice({
         state.CartItem[action.payload].qty -= 1;
       }
       localStorage.setItem("cart", JSON.stringify(state.CartItem))
-    })
+    }),
+    WishList: ((state, action) => {
+      let findIndex = state.WishListItem.findIndex((item) => item.id === action.payload.id)
+
+      if (findIndex == -1) {
+        state.WishListItem = [...state.WishListItem, action.payload]
+        localStorage.setItem("wishcart", JSON.stringify(state.WishListItem))
+      } else {
+        alert("Already Added WishLish. Thank You !")
+        localStorage.setItem("wishcart", JSON.stringify(state.WishListItem))
+      }
+    }),
+    deletProduct: ((state, action) => {
+      state.WishListItem.splice(action.payload, 1)
+        localStorage.setItem("wishcart", JSON.stringify(state.WishListItem))
+    }),
   }
 
 })
 
 // Action creators are generated for each case reducer function
-export const { addToCart, deletProduct, clientAccount, Increment, Decrement } = productSlice.actions
+export const { addToCart, deletProduct, clientAccount, Increment, Decrement, WishList } = productSlice.actions
 
 export default productSlice.reducer

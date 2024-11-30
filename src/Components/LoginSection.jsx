@@ -140,7 +140,7 @@ const LoginSection = () => {
                                         <input type="checkbox" id='pass' />
                                         <label for='pass'>Remember Me</label>
                                     </div>
-                                    <p>Forget Password?</p>
+                                    <p><Link to="/forgetPassword">Forget Password?</Link></p>
                                 </div>
                                 <button onClick={handleLogin} className='border-black border-2 rounded-md py-2 text-[20px] font-semibold btnHover'>Login</button>
                             </form>

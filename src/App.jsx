@@ -8,6 +8,9 @@ import Shop from "./Pages/Shop"
 import ProductDetails from "./Pages/ProductDetails"
 import FilterCategory from "./Pages/FilterCategory"
 import CheckOutPage from "./Pages/CheckOutPage"
+import ForgetPasswordPage from "./Pages/ForgetPasswordPage"
+import OtpPage from "./Pages/OtpPage"
+import WishListPage from "./Pages/WishListPage"
 
 
 
@@ -22,6 +25,9 @@ function App() {
       <Route path="/product/:id" element={<ProductDetails />} />
       <Route path="/category/:categoryName" element={<FilterCategory />} />
       <Route path="/checkOut" element={<CheckOutPage />} />
+      <Route path="/forgetPassword" element={<ForgetPasswordPage />} />
+      <Route path="/otp" element={<OtpPage />} />
+      <Route path="/wishList" element={<WishListPage />} />
     </Route>
   ))
 

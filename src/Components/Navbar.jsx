@@ -72,7 +72,7 @@ const Navbar = () => {
     }
 
     // Total Price
-    let total = cartQuantity.reduce((acc, curr) => acc + (curr.price * curr.qty) , 0)
+    let total = cartQuantity.reduce((acc, curr) => acc + (curr.price * curr.qty), 0)
 
 
 
@@ -124,7 +124,7 @@ const Navbar = () => {
                                     </div>
                                 }
                             </div>
-                            <span className='cursor-pointer border-2 border-black rounded-md px-2 py-2 btnHover'><CiHeart /></span>
+                            <span className='cursor-pointer border-2 border-black rounded-md px-2 py-2 btnHover'><Link to="/wishList"><CiHeart /></Link></span>
                             <div className='border-2 border-black rounded-md px-2 py-2 btnHover cursor-pointer relative'>
                                 <span className='' onClick={handleCart}><BsHandbag /></span>
                                 <span className='absolute -top-6 -right-2 bg-black text-white w-[25px] h-[25px] rounded-full flex justify-center items-center'>{cartLenth}</span>
