@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { apiData } from './ContextApi';
 import { Link, useNavigate } from 'react-router-dom';
 import { deletProduct } from './Slice/productSlice';
@@ -12,6 +12,7 @@ import { CiHeart } from "react-icons/ci";
 import { BsHandbag } from "react-icons/bs";
 import { IoChevronDown } from "react-icons/io5";
 import { IoTrashOutline } from "react-icons/io5";
+import { FiMenu } from 'react-icons/fi';
 
 
 
@@ -22,8 +23,10 @@ const Navbar = () => {
     const [cartShow, setCartShow] = useState(false)
     const [searchItem, setSearchItem] = useState([])
     const [inputValue, setInputValue] = useState()
-    let navigate = useNavigate()
-    let dispatch = useDispatch()
+    const [menuShow, setmenuShow] = useState(false) //Toggle MenuShow
+    const navigate = useNavigate() //Navigate Item
+    const dispatch = useDispatch() //Output data
+    const menuRef = useRef() //menubar 
 
     // filter Category
     useEffect(() => {
@@ -75,20 +78,32 @@ const Navbar = () => {
     let total = cartQuantity.reduce((acc, curr) => acc + (curr.price * curr.qty), 0)
 
 
+    // Menubar toggle
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (menuRef.current && !menuRef.current.contains(e.target)) {
+                setmenuShow(false);
+            }
+        };
+
+        document.addEventListener("click", handleClickOutside);
+        return () => document.removeEventListener("click", handleClickOutside);
+    }, []);
 
 
 
 
     return (
         <>
-            <nav className='fixed w-full z-50 left-0  top-0 bg-white bg-opacity-90 border-b-2 border-blue-500'>
+            <nav className='fixed w-full z-50 left-0  top-0 bg-white bg-opacity-90 border-b-2 border-blue-500 pb-3'>
                 <div className="container">
-                    <div className='flex items-center justify-between h-[100px]'>
-                        <div className=''>
+                    <div className='flex items-center flex-col gap-3 md:justify-between md:flex-row md:flex-wrap lg:h-[100px]'>
+                        <div className=' flex items-center justify-between w-full md:max-w-fit'>
                             <Link to="/"> <img className='duration-700 ease-in-out hover:scale-105 hover:shadow-custom-shadow' src={title} alt="" /></Link>
                         </div>
-                        <div>
-                            <ul className='flex items-center gap-4'>
+                        <div className=''>
+                            <ul className={`flex flex-col md:flex-row items-center gap-4 transition-all duration-500 ease-in-out ${menuShow ? "block max-h-screen opacity-100" : "hidden md:flex max-h-0 md:max-h-none opacity-0 md:opacity-100"
+                                }`}>
                                 <li><Link to="/">Home</Link></li>
                                 <div className="relative group">
                                     <li className="flex items-center gap-1 cursor-pointer">
@@ -107,7 +122,7 @@ const Navbar = () => {
                                 <li>Contact Us</li>
                             </ul>
                         </div>
-                        <div className='relative flex items-center gap-3'>
+                        <div className='relative flex items-center gap-3 justify-center w-full lg:max-w-fit'>
                             <div>
                                 <input value={inputValue} onChange={handleSearch} className='border-2 border-black outline-none rounded-md px-2 py-1 text-[16px]' placeholder='Search Your Product' type="search" />
                                 {searchItem.length > 0 &&
@@ -160,6 +175,14 @@ const Navbar = () => {
                                     </div>
                                 </div>
                             }
+                        </div>
+                        <div className="md:hidden absolute top-5 right-5" ref={menuRef}>
+                            <button
+                                onClick={() => setmenuShow((prev) => !prev)}
+                                className="text-[25px] focus:outline-none"
+                            >
+                                <FiMenu />
+                            </button>
                         </div>
                     </div>
                 </div>

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
-import {  deletProduct } from './Slice/productSlice';
+import {  deleteWishProduct } from './Slice/productSlice';
 
 // Icons
 import { GoTrash } from 'react-icons/go';
@@ -17,8 +17,7 @@ const WishListSection = () => {
         navigate(`/product/${itemId.id}`)
     }
     let handleTrash = (trash) => {
-        dispatch(deletProduct(trash))
-        
+        dispatch(deleteWishProduct(trash))
     }
 
    

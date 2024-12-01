@@ -17,6 +17,7 @@ import { BsPaypal } from "react-icons/bs";
 import { FaFacebookSquare } from "react-icons/fa";
 import { LuInstagram } from "react-icons/lu";
 import { FaTwitter } from "react-icons/fa";
+import { Link } from 'react-router-dom';
 
 
 const Footer = () => {
@@ -41,9 +42,9 @@ const Footer = () => {
                             <h1 className='font-semibold text-[25px]'>Information</h1>
                             <ul className='flex flex-col gap-2 text-slate-400'>
                                 <li>My Account</li>
-                                <li>Login</li>
+                                <li><Link to="/login">Login</Link></li>
                                 <li>My Cart</li>
-                                <li>My Wishlist</li>
+                                <li><Link to="/wishList">My Wishlist</Link></li>
                                 <li>CheckOut</li>
                             </ul>
                         </div>

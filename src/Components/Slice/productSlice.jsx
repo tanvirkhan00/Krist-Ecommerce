@@ -48,15 +48,15 @@ export const productSlice = createSlice({
         localStorage.setItem("wishcart", JSON.stringify(state.WishListItem))
       }
     }),
-    deletProduct: ((state, action) => {
+    deleteWishProduct: ((state, action) => {
       state.WishListItem.splice(action.payload, 1)
-        localStorage.setItem("wishcart", JSON.stringify(state.WishListItem))
+      localStorage.setItem("wishcart", JSON.stringify(state.WishListItem))
     }),
   }
 
 })
 
 // Action creators are generated for each case reducer function
-export const { addToCart, deletProduct, clientAccount, Increment, Decrement, WishList } = productSlice.actions
+export const { addToCart, deletProduct, clientAccount, Increment, Decrement, WishList, deleteWishProduct } = productSlice.actions
 
 export default productSlice.reducer

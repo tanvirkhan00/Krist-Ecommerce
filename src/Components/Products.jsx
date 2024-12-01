@@ -1,4 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
+import ResponsivePagination from 'react-responsive-pagination';
+import 'react-responsive-pagination/themes/classic.css';
 import { apiData } from './ContextApi';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -13,11 +15,12 @@ import { IoEyeOutline } from "react-icons/io5";
 
 const Products = () => {
 
-    let products = useContext(apiData)
-    let [category, setCategory] = useState([])
-    let [categoryItems, setCategoryItems] = useState([])
+    const products = useContext(apiData)
+    const [category, setCategory] = useState([])
+    const [categoryItems, setCategoryItems] = useState([])
     const [priceRange, setPriceRange] = useState({ min: 0, max: 10 });
     const dispatch = useDispatch()
+    const [currentPage, setCurrentPage] = useState(1);
 
     useEffect(() => {
         setCategory([...new Set(products.map((item) => item.category))])
@@ -45,7 +48,6 @@ const Products = () => {
     let handleCart = (itemId) => {
         const auth = getAuth()
         const user = auth.currentUser
-
         if (!user) {
             alert("Please Create Account")
         } else if (user.emailVerified == false) {
@@ -59,6 +61,13 @@ const Products = () => {
     let handleWishList = (itemId) => {
         dispatch(WishList({ ...itemId, qty: 1 }))
     }
+
+    // Pagination
+    const itemsPerPage = 15;
+    const totalPages = Math.ceil(products.length / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage
+    const endIndex = startIndex + itemsPerPage
+    const paginatedProducts = filteredProducts.slice(startIndex, endIndex)
 
 
 
@@ -179,13 +188,13 @@ const Products = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className='basis-[75%]'>
+                        <div className='basis-[75%] flex flex-col'>
                             <div className='flex items-center justify-between'>
-                                <p>Showing {filteredProducts.length} results of {products.length} Products</p>
+                                <p>Showing {paginatedProducts.length} results of {products.length} Products</p>
                                 <p>Short by latest </p>
                             </div>
                             <div className='flex flex-wrap gap-x-3 gap-y-5 mt-5'>
-                                {filteredProducts.map((item) => (
+                                {paginatedProducts.map((item) => (
                                     <div className='basis-[24%] flex flex-col gap-3 shadow-sm shadow-black pb-2'>
                                         <div className='bg-slate-300 relative group'>
                                             <Link to={`/product/${item.id}`}><img className='h-[150px] w-[150px] mx-auto' src={item.thumbnail} alt={item.title} /></Link>
@@ -204,6 +213,13 @@ const Products = () => {
                                         </div>
                                     </div>
                                 ))}
+                            </div>
+                            <div className='mt-[30px]'>
+                                <ResponsivePagination
+                                    current={currentPage}
+                                    total={totalPages}
+                                    onPageChange={setCurrentPage}
+                                />
                             </div>
                         </div>
                     </div>

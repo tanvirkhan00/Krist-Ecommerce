@@ -59,7 +59,7 @@ const SingleProduct = () => {
         <>
 
             <section>
-                <div className="container mt-[100px]">
+                <div className="container mt-[150px]">
                     <div className='flex items-center gap-4'>
                         <div className='basis-[47%] flex items-center justify-center'>
                             <img src={product.thumbnail} alt={product.title} />

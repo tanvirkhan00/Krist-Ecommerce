@@ -9,6 +9,7 @@ import title from "../assets/LogoWebsite.png";
 
 // Icon
 import { MdErrorOutline } from "react-icons/md";
+import { IoEyeOffOutline, IoEyeOutline } from 'react-icons/io5';
 
 
 
@@ -23,6 +24,7 @@ const SignUpSection = () => {
     let [emailErr, setEmailErr] = useState('')
     let [passWord, setPassWord] = useState('')
     let [passWordErr, setPassWordErr] = useState('')
+    let [visiblePass, setVisiblePass] =useState(false)
     let navigate = useNavigate()
     const auth = getAuth();
 
@@ -66,11 +68,11 @@ const SignUpSection = () => {
                         navigate('/login')
                     }, 2000)
                     sendEmailVerification(auth.currentUser)
-                    .then(() => {
-                    })
-                    .catch((error) => {
-                        const errorCode = error.code;
-                    });
+                        .then(() => {
+                        })
+                        .catch((error) => {
+                            const errorCode = error.code;
+                        });
                 })
                 .catch((error) => {
                     const errorCode = error.code;
@@ -81,8 +83,6 @@ const SignUpSection = () => {
         }
 
     }
-
-
 
     let handleFName = (e) => {
         setFName(e.target.value)
@@ -99,6 +99,9 @@ const SignUpSection = () => {
     let handlePass = (e) => {
         setPassWord(e.target.value)
         setPassWordErr('')
+    }
+    let passwrdVisible =() => {
+        setVisiblePass(!visiblePass)
     }
 
 
@@ -139,9 +142,12 @@ const SignUpSection = () => {
                                 </div>
                                 <div className='flex  flex-col'>
                                     <label htmlFor="password">Password</label>
-                                    <input onChange={handlePass} className='border-2 border-slate-300 px-2 py-2 rounded-md outline-none borderHover' type="password" />
+                                    <div className='flex items-center justify-between border-2 border-slate-300 borderHover  px-2 py-2 rounded-md'>
+                                        <input onChange={handlePass} className='outline-none flex-1' type={visiblePass?"text" :"password"} />
+                                        <span onClick={passwrdVisible}>{visiblePass? <IoEyeOutline />:<IoEyeOffOutline />}</span>
+                                    </div>
                                     {passWordErr &&
-                                        <p className='flex items-center gap-1'><span className='text-red-500'><MdErrorOutline /></span> {passWordErr}</p>
+                                        <p className='flex items-center gap-1'><span className='text-red-500'><MdErrorOutline /></span>{passWordErr}</p>
                                     }
                                 </div>
                                 <div className='flex justify-between items-center'>

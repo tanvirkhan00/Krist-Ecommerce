@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { getAuth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { clientAccount } from './Slice/productSlice';
+import { useDispatch } from 'react-redux';
 
 
 
@@ -15,8 +17,7 @@ import { FaEyeSlash, FaHandSparkles } from "react-icons/fa";
 import { MdErrorOutline } from "react-icons/md";
 import { FcGoogle } from "react-icons/fc";
 import { FaRegEye } from "react-icons/fa";
-import { useDispatch } from 'react-redux';
-import { clientAccount } from './Slice/productSlice';
+
 
 
 
@@ -115,7 +116,7 @@ const LoginSection = () => {
                             <img className='w-full h-[700px]' src={image} alt="" />
                         </div>
                         <div className='md:basis-[30%] flex flex-col gap-3'>
-                            <h1 className='flex items-center gap-2 text-[45px] font-bold font-serif'>Welcome <span className='text-yellow-400'><FaHandSparkles /></span></h1>
+                            <h1 className='flex items-center gap-2 text-[45px] font-bold font-serif'>Welcome <span className='text-yellow-400 animate-bounce'><FaHandSparkles /></span></h1>
                             <p className='text-slate-500'>Please login here</p>
                             <form className='flex flex-col gap-3'>
                                 <div className='flex flex-col'>
