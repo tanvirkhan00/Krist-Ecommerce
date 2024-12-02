@@ -60,13 +60,13 @@ const SingleProduct = () => {
 
             <section>
                 <div className="container mt-[150px]">
-                    <div className='flex items-center gap-4'>
-                        <div className='basis-[47%] flex items-center justify-center'>
+                    <div className='flex items-center flex-col md:flex-row gap-4'>
+                        <div className='md:basis-[47%] flex items-center justify-center'>
                             <img src={product.thumbnail} alt={product.title} />
                         </div>
-                        <div className='basis-[47%] flex flex-col gap-2'>
+                        <div className='md:basis-[47%] flex flex-col gap-2'>
                             <div className='flex items-center justify-between'>
-                                <h1 className='font-semibold text-[25px]'>{product.title}</h1>
+                                <h1 className='font-semibold text-[25px] md:text-[20px]'>{product.title}</h1>
                                 <span className='text-green-600'>{product.availabilityStatus}</span>
                             </div>
                             <p>{product.description}</p>

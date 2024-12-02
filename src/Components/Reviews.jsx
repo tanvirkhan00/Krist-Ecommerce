@@ -26,7 +26,7 @@ const Reviews = () => {
                         </div>
                         <div className='flex gap-3 flex-wrap'>
                             {reviews.map((item) =>(
-                                <div className='basis-[19%] truncate border-2 border-black rounded-md p-5 btnHover'>
+                                <div className='basis-[48%] lg:basis-[19%] truncate border-2 border-black rounded-md p-5 btnHover'>
                                     <p>Rating: {item.rating}</p>
                                     <p>Comment: {item.comment}</p>
                                     <p>Date: {item.date}</p>

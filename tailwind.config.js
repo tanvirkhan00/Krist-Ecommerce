@@ -6,18 +6,23 @@ export default {
   ],
   theme: {
     screens: {
-      sm:"480px",
-      md:"768px",
-      lg:"1280px",
+      sm: "480px",
+      md: "768px",
+      lg: "1280px",
     },
     container: {
       center: true,
-      padding:"1rem",
+      padding: "1rem",
     },
     extend: {
-      boxShadow:{
-        'custom-shadow':'0 5px 10px rgba(0, 0, 0, 1)',
-      }
+      boxShadow: {
+        'custom-shadow': '0 5px 10px rgba(0, 0, 0, 1)',
+      },
+      animation: {
+        bounceSlow: " bounce 4s linear infinite",
+        bounceMiddle: "bounce 3s linear infinite",
+        bouncefast: "bounce 2s linear infinite",
+      },
     },
   },
   plugins: [],

@@ -34,8 +34,8 @@ const ShopByCategory = () => {
                         <div className='flex flex-wrap gap-3'>
                             {categoryData.map((item) => (
                                 <div onClick={() =>handleCategory(item)} className='basis-[9%] flex flex-col shadow-sm shadow-black items-center text-center py-3 rounded-sm upScallHover'>
-                                    <img className='h-[100px]' src={item.thumbnail} alt="" />
-                                    <p className='w-[80px] truncate'>{item.category}</p>
+                                    <img className='h-[60px] md:h-[80px]' src={item.thumbnail} alt="" />
+                                    <p className='w-[80px] truncate px-1'>{item.category}</p>
                                 </div>
                             ))}
                         </div>

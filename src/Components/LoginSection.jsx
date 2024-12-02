@@ -83,8 +83,6 @@ const LoginSection = () => {
                 });
         }
     }
-
-
     let handleEmail = (e) => {
         setEmail(e.target.value)
         setEmailErr('')
@@ -109,13 +107,13 @@ const LoginSection = () => {
     return (
         <>
             <section>
-                <div className="container mt-[100px]">
-                    <div className='flex items-center flex-wrap gap-10'>
-                        <div className='md:basis-[60%] relative'>
+                <div className="container mt-[150px]">
+                    <div className='flex items-center flex-wrap gap-10 '>
+                        <div className='basis-[100%] md:basis-[50%] relative'>
                             <img className='absolute top-10 left-10' src={title} alt="" />
                             <img className='w-full h-[700px]' src={image} alt="" />
                         </div>
-                        <div className='md:basis-[30%] flex flex-col gap-3'>
+                        <div className='basis-[100%] md:basis-[30%] flex flex-col gap-3'>
                             <h1 className='flex items-center gap-2 text-[45px] font-bold font-serif'>Welcome <span className='text-yellow-400 animate-bounce'><FaHandSparkles /></span></h1>
                             <p className='text-slate-500'>Please login here</p>
                             <form className='flex flex-col gap-3'>

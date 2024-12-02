@@ -18,13 +18,13 @@ const Products = () => {
     const products = useContext(apiData)
     const [category, setCategory] = useState([])
     const [categoryItems, setCategoryItems] = useState([])
-    const [priceRange, setPriceRange] = useState({ min: 0, max: 10 });
+    const [priceRange, setPriceRange] = useState({ min: 0, max: 40000 });
     const dispatch = useDispatch()
     const [currentPage, setCurrentPage] = useState(1);
 
     useEffect(() => {
         setCategory([...new Set(products.map((item) => item.category))])
-    })
+    },[products])
 
     let handleCategory = (cat) => {
         let filterCategory = products.filter((item) => item.category == cat)
@@ -77,7 +77,7 @@ const Products = () => {
             <section>
                 <div className="container mt-[150px]">
                     <div className='flex flex-wrap gap-3 justify-between'>
-                        <div className='basis-[20%]'>
+                        <div className='md:basis-[30%] lg:basis-[20%]'>
                             <div className='group'>
                                 <h1 className='font-semibold text-[25px] cursor-pointer'>Product Category</h1>
                                 <div className='mt-4 flex flex-col gap-2 h-0 overflow-y-scroll opacity-0 invisible -translate-y-3 duration-700 ease-in-out group-hover:opacity-100 group-hover:visible group-hover:-translate-y-0 group-hover:h-[300px]'>
@@ -188,14 +188,14 @@ const Products = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className='basis-[75%] flex flex-col'>
+                        <div className='md:basis-[65%] lg:basis-[75%] flex flex-col'>
                             <div className='flex items-center justify-between'>
                                 <p>Showing {paginatedProducts.length} results of {products.length} Products</p>
                                 <p>Short by latest </p>
                             </div>
-                            <div className='flex flex-wrap gap-x-3 gap-y-5 mt-5'>
+                            <div className='flex flex-wrap  gap-y-5 mt-5 gap-x-6 lg:gap-x-3'>
                                 {paginatedProducts.map((item) => (
-                                    <div className='basis-[24%] flex flex-col gap-3 shadow-sm shadow-black pb-2'>
+                                    <div className='basis-[47%] md:basis-[24%] flex flex-col gap-3 shadow-sm shadow-black pb-2'>
                                         <div className='bg-slate-300 relative group'>
                                             <Link to={`/product/${item.id}`}><img className='h-[150px] w-[150px] mx-auto' src={item.thumbnail} alt={item.title} /></Link>
                                             <div className='bg-yellow-500 absolute bottom-0 w-full py-1 text-sm font-semibold  opacity-0 duration-700 translate-y-3 ease-in-out group-hover:opacity-100 group-hover:translate-y-0'>
@@ -207,7 +207,7 @@ const Products = () => {
                                             </div>
                                         </div>
                                         <div className='px-3'>
-                                            <h1 className='font-semibold w-[200px] truncate'>{item.title}</h1>
+                                            <h1 className='font-semibold w-[180px] md:w-[200px] truncate'>{item.title}</h1>
                                             <h2>{item.category}</h2>
                                             <h5>$ {item.price}</h5>
                                         </div>

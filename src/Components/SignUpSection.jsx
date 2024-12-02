@@ -109,14 +109,14 @@ const SignUpSection = () => {
         <>
 
             <section>
-                <div className="container mt-[100px]">
-                    <div className='flex items-center flex-wrap gap-10'>
-                        <div className='md:basis-[55%] relative'>
+                <div className="container mt-[150px]">
+                    <div className='flex items-center flex-wrap gap-5 lg:gap-10'>
+                        <div className='basis-[100%] md:basis-[55%] relative'>
                             <img className='absolute top-10 left-10' src={title} alt="" />
                             <img className='w-full h-[700px]' src={image} alt="" />
                         </div>
-                        <div className='md:basis-[40%] flex flex-col gap-3'>
-                            <h1 className='flex items-center gap-2 text-[45px] font-bold font-serif'>Create New Account</h1>
+                        <div className='basis-[100%] md:basis-[40%] lg:basis-[30%] flex flex-col gap-3'>
+                            <h1 className='flex items-center gap-2 text-[30px] font-bold font-serif'>Create New Account</h1>
                             <p className='text-slate-500'>Please enter details</p>
                             <form className='flex flex-col gap-3'>
                                 <div className='flex flex-col'>

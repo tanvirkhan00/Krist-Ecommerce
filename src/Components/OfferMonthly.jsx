@@ -12,7 +12,7 @@ const OfferMonthly = () => {
             <section>
                 <div className="container mt-[50px]">
                     <div className='flex flex-wrap items-center gap-4'>
-                        <div className='basis-[48%] flex flex-col gap-4'>
+                        <div className='md:basis-[48%] flex flex-col gap-4'>
                             <h1 className='text-[35px] font-semibold'>Deals of the Month</h1>
                             <p>It is a long established fact that a reader will be distracted by the readable content of a page when looking at it's layout. The point of using that it has more or less normal distribution of letters.</p>
                             <div className='flex items-center gap-8 text-center'>
@@ -35,7 +35,7 @@ const OfferMonthly = () => {
                             </div>
                             <button className='flex items-center gap-2 border-2 border-black rounded-md max-w-fit px-6 py-4 font-semibold btnHover'><Link to="/shop">View All Products</Link> <span><FaCircleArrowRight/></span></button>
                         </div>
-                        <div className='basis-[48%]'>
+                        <div className='md:basis-[48%]'>
                             <img src={womanImage} alt="" />
                         </div>
                     </div>

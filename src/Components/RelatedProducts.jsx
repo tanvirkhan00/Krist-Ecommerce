@@ -45,7 +45,7 @@ const RelatedProducts = ({ filterCategory }) => {
                         </div>
                         <div className='flex flex-wrap gap-x-3 gap-y-5 mt-5'>
                             {filterCategory.map((item) => (
-                                <div className='basis-[19%] flex flex-col gap-3 shadow-sm shadow-black pb-2'>
+                                <div className='basis-[48%] md:basis-[19%] flex flex-col gap-3 shadow-sm shadow-black pb-2'>
                                     <div className='bg-slate-300 relative group'>
                                         <Link to={`/product/${item.id}`}><img className='h-[150px] w-[150px] mx-auto' src={item.thumbnail} alt={item.title} /></Link>
                                         <div className='bg-yellow-500 absolute bottom-0 w-full py-1 text-sm font-semibold  opacity-0 duration-700 translate-y-3 ease-in-out group-hover:opacity-100 group-hover:translate-y-0'>
@@ -57,7 +57,7 @@ const RelatedProducts = ({ filterCategory }) => {
                                         </div>
                                     </div>
                                     <div className='px-3'>
-                                        <h1 className='font-semibold w-[200px] truncate'>{item.title}</h1>
+                                        <h1 className='font-semibold w-[180px] md:w-[200px] truncate'>{item.title}</h1>
                                         <h2>{item.category}</h2>
                                         <h5>$ {item.price}</h5>
                                     </div>

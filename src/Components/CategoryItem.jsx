@@ -49,12 +49,12 @@ const CategoryItem = () => {
         <>
             <section>
                 <div className="container mt-[150px]">
-                    <h1 className='text-[25px] font-semibold font-serif mb-5'>Have {categoryItem.length} Items in <span className='text-red-500 capitalize'>{categoryName}</span> Category</h1>
+                    <h1 className='text-[20px] font-semibold font-serif mb-5'>Have {categoryItem.length} Items in <span className='text-red-500 capitalize'>{categoryName}</span> Category</h1>
                     <div className="flex flex-wrap gap-4">
                         {categoryItem.length > 0 ? (
                             <div className='flex flex-wrap gap-7'>
                                 {categoryItem.map(item => (
-                                    <div className='basis-[18%] flex flex-col gap-3 shadow-sm shadow-black pb-2'>
+                                    <div className='basis-[46%]  md:basis-[18%] flex flex-col gap-3 shadow-sm shadow-black pb-2'>
                                         <div className='bg-slate-300 relative group'>
                                             <Link to={`/product/${item.id}`}><img className='h-[150px] w-[150px] mx-auto' src={item.thumbnail} alt={item.title} /></Link>
                                             <div onClick={() => handleCart(item)} className='bg-yellow-500 absolute bottom-0 w-full py-1 text-sm font-semibold  opacity-0 duration-700 translate-y-3 ease-in-out group-hover:opacity-100 group-hover:translate-y-0'>
@@ -66,7 +66,7 @@ const CategoryItem = () => {
                                             </div>
                                         </div>
                                         <div className='px-3'>
-                                            <h1 className='font-semibold w-[200px] truncate'>{item.title}</h1>
+                                            <h1 className='font-semibold w-[180px] md:w-[200px] truncate'>{item.title}</h1>
                                             <h2>{item.category}</h2>
                                             <h5>$ {item.price}</h5>
                                         </div>
