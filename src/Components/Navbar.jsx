@@ -12,6 +12,7 @@ import { CiHeart } from "react-icons/ci";
 import { BsHandbag } from "react-icons/bs";
 import { IoChevronDown, IoTrashOutline } from "react-icons/io5";
 import { FiMenu, FiSearch } from "react-icons/fi";
+import OurStory from "../Pages/OurStory";
 
 const Navbar = () => {
   const products = useContext(apiData) || [];
@@ -164,7 +165,7 @@ const Navbar = () => {
               </div>
 
               <li className="hover:text-blue-500 transition-colors duration-300">
-                <span className="block py-2 cursor-pointer">Our Story</span>
+                <span className="block py-2 cursor-pointer"><Link to='/OurStory'>Our Story</Link></span>
               </li>
               <li className="hover:text-blue-500 transition-colors duration-300">
                 <span className="block py-2 cursor-pointer">Contact Us</span>
