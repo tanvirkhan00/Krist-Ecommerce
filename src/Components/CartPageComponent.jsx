@@ -7,7 +7,7 @@ import { Decrement, deletProduct, Increment } from './Slice/productSlice';
 import { FiMinus, FiPlus } from 'react-icons/fi';
 import { GoTrash } from 'react-icons/go';
 
-const CheckOutComponent = () => {
+const CartPageComponent = () => {
     const dispatch = useDispatch()
     const navigate = useNavigate()
 
@@ -41,7 +41,7 @@ const CheckOutComponent = () => {
             <section>
                 <div className="container mt-[100px]">
                     <div>
-                        <h1 className='font-semibold text-[30px]'>CheckOut</h1>
+                        <h1 className='font-semibold text-[30px]'>Product Cart</h1>
                         <div className='flex flex-wrap justify-between gap-5 mt-5'>
                             <div className='basis-[65%] flex flex-col gap-4'>
                                 <ul className='flex gap-2 items-center shadow-md shadow-blue-500 py-2'>
@@ -105,4 +105,4 @@ const CheckOutComponent = () => {
     );
 };
 
-export default CheckOutComponent;
+export default CartPageComponent;

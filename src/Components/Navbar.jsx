@@ -167,9 +167,6 @@ const Navbar = () => {
                 <span className="block py-2 cursor-pointer">Our Story</span>
               </li>
               <li className="hover:text-blue-500 transition-colors duration-300">
-                <span className="block py-2 cursor-pointer">Blog</span>
-              </li>
-              <li className="hover:text-blue-500 transition-colors duration-300">
                 <span className="block py-2 cursor-pointer">Contact Us</span>
               </li>
             </ul>
@@ -335,7 +332,7 @@ const Navbar = () => {
               <div className="flex flex-col gap-3">
                 <button
                   onClick={() => {
-                    navigate("/");
+                    navigate("/cartPage");
                     setCartShow(false);
                   }}
                   className="border-2 border-black rounded-md py-3 btnHover hover:bg-black hover:text-white transition-all duration-300 font-medium"
@@ -344,7 +341,7 @@ const Navbar = () => {
                 </button>
                 <button
                   onClick={() => {
-                    navigate("/checkout");
+                    navigate("/");
                     setCartShow(false);
                   }}
                   className="border-2 border-black rounded-md py-3 btnHover hover:bg-blue-500 hover:border-blue-500 hover:text-white transition-all duration-300 font-medium"

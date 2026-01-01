@@ -9,8 +9,8 @@ const OurService = () => {
     return (
         <>
 
-            <section>
-                <div className="container mt-[50px]">
+            <section className='bg-gray-100 py-12'>
+                <div className="container">
                     <div className='flex items-center flex-wrap gap-3'>
                         <div className='basis-[100%] md:basis-[48%] lg:basis-[24%] p-8 flex flex-col gap-2 btnHover truncate'>
                             <span className='text-[30px]'><FaShippingFast /></span>

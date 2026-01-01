@@ -25,7 +25,7 @@ const Footer = () => {
         <>
 
             <footer className='bg-black'>
-                <div className="container mt-[50px]">
+                <div className="container">
                     <div className='flex flex-wrap gap-5 text-white py-[50px]'>
                         <div className='basis-[47%] md:basis-[31%] lg:basis-[23%] flex flex-col gap-6'>
                             <div className='flex items-center gap-2'>
@@ -43,17 +43,16 @@ const Footer = () => {
                             <ul className='flex flex-col gap-2 text-slate-400'>
                                 <li>My Account</li>
                                 <li><Link to="/login">Login</Link></li>
-                                <li>My Cart</li>
+                                <li><Link to="/cartPage">My Cart</Link></li>
                                 <li><Link to="/wishList">My Wishlist</Link></li>
                                 <li>CheckOut</li>
                             </ul>
                         </div>
                         <div className='basis-[47%] md:basis-[31%] lg:basis-[23%] flex flex-col gap-4'>
-                            <h2 className='font-semibold text-[20px] md:text-[25px]'>Service</h2>
+                            <h2 className='font-semibold text-[20px] md:text-[25px]'>Quick Links</h2>
                             <ul className='flex flex-col gap-2 text-slate-400'>
                                 <li>About Us</li>
-                                <li>Careers</li>
-                                <li>Delivery Information</li>
+                                <li>Contact Us</li>
                                 <li>Privacy Policy</li>
                                 <li>Terms & Condition</li>
                             </ul>

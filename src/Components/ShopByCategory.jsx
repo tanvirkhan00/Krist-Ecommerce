@@ -25,8 +25,8 @@ const ShopByCategory = () => {
     return (
         <>
 
-            <section>
-                <div className="container mt-[50px]">
+            <section className='bg-gray-100 py-14'>
+                <div className="container">
                     <div className='flex flex-col gap-3'>
                         <div>
                             <h1 className='text-[25px] font-semibold'>Shop by Category</h1>
