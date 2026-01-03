@@ -1,15 +1,15 @@
 import React from 'react';
-import HiroHome from '../Components/HiroHome';
-import ShopByCategory from '../Components/ShopByCategory';
-import OfferMonthly from '../Components/OfferMonthly';
-import Reviews from '../Components/Reviews';
-import InstagramStories from '../Components/InstagramStories';
-import OurService from '../Components/OurService';
+import HeroHome from '../HomePageComponents/HeroHome';
+import ShopByCategory from '../HomePageComponents/ShopByCategory';
+import OfferMonthly from '../HomePageComponents/OfferMonthly';
+import Reviews from '../HomePageComponents/Reviews';
+import InstagramStories from '../HomePageComponents/InstagramStories';
+import OurService from '../HomePageComponents/OurService';
 
 const Home = () => {
     return (
         <>
-            <HiroHome />
+            <HeroHome/>
             <ShopByCategory />
             <OfferMonthly />
             <Reviews />

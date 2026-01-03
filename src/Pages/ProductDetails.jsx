@@ -1,6 +1,6 @@
 import React from 'react';
 import SingleProduct from '../Components/SingleProduct';
-import OurService from '../Components/OurService';
+import OurService from '../HomePageComponents/OurService';
 
 const ProductDetails = () => {
     return (
