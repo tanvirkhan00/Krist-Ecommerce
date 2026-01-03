@@ -11,7 +11,6 @@ import ForgetPasswordPage from "./Pages/ForgetPasswordPage"
 import OtpPage from "./Pages/OtpPage"
 import WishListPage from "./Pages/WishListPage"
 import CartPage from "./Pages/CartPage"
-import OurStory from "./Pages/OurStory"
 
 
 
@@ -29,7 +28,6 @@ function App() {
       <Route path="/forgetPassword" element={<ForgetPasswordPage />} />
       <Route path="/otp" element={<OtpPage />} />
       <Route path="/wishList" element={<WishListPage />} />
-      <Route path="/ourStory" element={<OurStory/>} />
     </Route>
   ))
 
