@@ -1,5 +1,5 @@
 import React from 'react';
-import SingleProduct from '../Components/SingleProduct';
+import SingleProduct from '../Components/ProductDetailsPage/SingleProduct';
 import OurService from '../HomePageComponents/OurService';
 
 const ProductDetails = () => {
