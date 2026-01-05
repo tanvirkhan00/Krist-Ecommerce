@@ -39,7 +39,7 @@ const Footer = () => {
 
             {/* Main Footer Content */}
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-                <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12 py-12 md:py-16 lg:py-20'>
+                <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12 py-12 md:py-16 lg:py-20'>
                     
                     {/* Company Info */}
                     <div className='flex flex-col gap-6'>
@@ -63,13 +63,13 @@ const Footer = () => {
                                 <span className='w-10 h-10 bg-purple-600/20 rounded-full flex items-center justify-center group-hover:bg-purple-600/30 transition-colors'>
                                     <HiOutlineMail className='text-purple-400' />
                                 </span>
-                                <span>krist@gmail.com</span>
+                                <span>kmtanvir1111@gmail.com</span>
                             </a>
                             <div className='flex items-center gap-3 text-gray-300 group'>
                                 <span className='w-10 h-10 bg-pink-600/20 rounded-full flex items-center justify-center group-hover:bg-pink-600/30 transition-colors'>
                                     <IoLocationOutline className='text-pink-400' />
                                 </span>
-                                <span>Dhanmondi, Dhaka</span>
+                                <span>Banasree, Rampura, Dhaka</span>
                             </div>
                         </div>
                     </div>
@@ -96,33 +96,6 @@ const Footer = () => {
                                         <IoArrowForward className='opacity-0 group-hover:opacity-100 transition-opacity text-blue-400' />
                                         {item.name}
                                     </Link>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-
-                    {/* Quick Links */}
-                    <div className='flex flex-col gap-6'>
-                        <h3 className='text-xl md:text-2xl font-bold relative inline-block'>
-                            Quick Links
-                            <span className='absolute bottom-0 left-0 w-12 h-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full'></span>
-                        </h3>
-                        <ul className='flex flex-col gap-3'>
-                            {[
-                                'About Us',
-                                'Contact Us',
-                                'Privacy Policy',
-                                'Terms & Condition',
-                                'FAQs'
-                            ].map((item, index) => (
-                                <li key={index}>
-                                    
-                                    <a    href="#"
-                                        className='text-gray-400 hover:text-white hover:translate-x-2 transition-all duration-300 flex items-center gap-2 group'
-                                    >
-                                        <IoArrowForward className='opacity-0 group-hover:opacity-100 transition-opacity text-purple-400' />
-                                        {item}
-                                    </a>
                                 </li>
                             ))}
                         </ul>
@@ -190,7 +163,7 @@ const Footer = () => {
                 </div>
 
                 {/* Features Section */}
-                <div className='border-y border-gray-700 py-8'>
+                {/* <div className='border-y border-gray-700 py-8'>
                     <div className='grid grid-cols-2 md:grid-cols-4 gap-6'>
                         {[
                             { icon: '🚚', title: 'Free Shipping', desc: 'On orders over $150' },
@@ -209,10 +182,10 @@ const Footer = () => {
                             </div>
                         ))}
                     </div>
-                </div>
+                </div> */}
 
                 {/* Bottom Footer */}
-                <div className='py-6'>
+                <div className='py-6 border-t border-gray-700'>
                     <div className='flex flex-col md:flex-row items-center justify-between gap-6'>
                         {/* Payment Methods */}
                         <div className='flex items-center gap-3 flex-wrap justify-center md:justify-start'>

@@ -210,7 +210,7 @@ const Navbar = () => {
 
               <li className="relative group">
                 <span className="block py-2 cursor-pointer hover:text-blue-600 transition-colors duration-300">
-                  Contact Us
+                  <Link to="/contactPage" className="block">Contact Us</Link>
                   <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-600 to-purple-600 group-hover:w-full transition-all duration-300"></span>
                 </span>
               </li>
