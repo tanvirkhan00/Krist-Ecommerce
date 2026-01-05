@@ -29,11 +29,11 @@ const LoginSection = () => {
     let [emailErr, setEmailErr] = useState('')
     let [passWord, setPassWord] = useState('')
     let [passWordErr, setPassWordErr] = useState('')
-    let [passShow, setPassShow] =useState(false)
+    let [passShow, setPassShow] = useState(false)
     const auth = getAuth();
     let navigate = useNavigate();
     const provider = new GoogleAuthProvider();
-    let dispatch =useDispatch()
+    let dispatch = useDispatch()
 
 
 
@@ -65,7 +65,7 @@ const LoginSection = () => {
         if (email && passWord && /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
             signInWithEmailAndPassword(auth, email, passWord)
                 .then((user) => {
-                    if(user.user.emailVerified === true){
+                    if (user.user.emailVerified === true) {
                         setTimeout(() => {
                             navigate('/')
                         }, 2000)
@@ -73,7 +73,7 @@ const LoginSection = () => {
                     } else {
                         setPassWordErr('Please verify your email')
                     }
-                   
+
                 })
                 .catch((error) => {
                     const errorCode = error.code;
@@ -93,15 +93,15 @@ const LoginSection = () => {
     }
     let handleGoogle = (e) => {
         signInWithPopup(auth, provider)
-        .then(() => {
-            navigate('/');
-            
-        }).catch((error) => {
-            const errorCode = error.code;
-        });
+            .then(() => {
+                navigate('/');
+
+            }).catch((error) => {
+                const errorCode = error.code;
+            });
     }
-    let handleEye =() =>{
-        setPassShow(!passShow) 
+    let handleEye = () => {
+        setPassShow(!passShow)
     }
 
     return (
@@ -127,8 +127,8 @@ const LoginSection = () => {
                                 <div className='flex  flex-col relative'>
                                     <label htmlFor="pass">Password</label>
                                     <input onChange={handlePass} className='border-2 border-slate-300 px-2 py-2 rounded-md outline-none borderHover' type={passShow ? 'text' : 'password'} />
-                                    <span onClick={handleEye} className='absolute right-3 top-10 '>{passShow ? <FaEyeSlash/> :  <FaRegEye/>
-                                     }</span>
+                                    <span onClick={handleEye} className='absolute right-3 top-10 '>{passShow ? <FaEyeSlash /> : <FaRegEye />
+                                    }</span>
 
                                     {passWordErr &&
                                         <p className='flex items-center gap-1'><span className='text-red-500'><MdErrorOutline /></span> {passWordErr}</p>
