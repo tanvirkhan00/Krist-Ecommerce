@@ -1,7 +1,7 @@
 import React from 'react';
 
 // Image
-import Image from "../assets/Image3.png"
+import Image3 from "../../assets/Image3.png"
 
 // Icons
 import { LuChevronLeft } from 'react-icons/lu';
@@ -15,7 +15,7 @@ const OtpSection = () => {
                 <div className="container mt-[150px]">
                     <div className='flex items-center gap-10 flex-wrap'>
                         <div className='basis-[50%]'>
-                            <img src={Image} alt="" />
+                            <img src={Image3} alt="" />
                         </div>
                         <div className='basis-[35%] flex flex-col gap-3'>
                             <p className='flex items-center gap-1'><LuChevronLeft /><Link to="/login">Back</Link> </p>

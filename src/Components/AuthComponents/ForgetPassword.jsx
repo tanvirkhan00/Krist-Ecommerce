@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 // Image
-import Image from "../assets/Image2.png"
+import Image2 from "../../assets/Image2.png"
 
 // Icons
 import { LuChevronLeft } from 'react-icons/lu';
@@ -15,7 +15,7 @@ const ForgetPassword = () => {
                 <div className="container mt-[150px]">
                     <div className='flex items-center flex-wrap gap-12'>
                         <div className='basis-[48%]'>
-                            <img src={Image} alt="" />
+                            <img src={Image2} alt="" />
                         </div>
                         <div className='basis-[35%] flex flex-col gap-3'>
                             <p className='flex items-center gap-1'><LuChevronLeft /><Link to="/login">Back</Link> </p>

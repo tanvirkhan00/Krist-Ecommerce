@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { getAuth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
-import { clientAccount } from './Slice/productSlice';
+import { clientAccount } from '../Slice/productSlice';
 import { useDispatch } from 'react-redux';
 
 
@@ -9,8 +9,8 @@ import { useDispatch } from 'react-redux';
 
 
 // Image
-import title from "../assets/LogoWebsite.png";
-import image from "../assets/Image.png";
+import title from "../../assets/LogoWebsite.png";
+import image from "../../assets/Image.png";
 
 // Icons
 import { FaEyeSlash, FaHandSparkles } from "react-icons/fa";

@@ -1,5 +1,5 @@
 import React from 'react';
-import OtpSection from '../Components/OtpSection';
+import OtpSection from '../Components/AuthComponents/OtpSection';
 
 const OtpPage = () => {
     return (

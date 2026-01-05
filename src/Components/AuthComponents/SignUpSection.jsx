@@ -4,8 +4,8 @@ import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from "
 
 
 // Image
-import image from "../assets/Image1.png"
-import title from "../assets/LogoWebsite.png";
+import image from "../../assets/Image.png"
+import title from "../../assets/LogoWebsite.png";
 
 // Icon
 import { MdErrorOutline } from "react-icons/md";
