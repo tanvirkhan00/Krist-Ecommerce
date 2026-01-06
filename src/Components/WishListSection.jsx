@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
-import { deleteWishProduct } from './Slice/productSlice';
+import { deleteWishProduct } from './Slice/productSlice.jsx';
 
 // Icons
 import { GoTrash } from 'react-icons/go';

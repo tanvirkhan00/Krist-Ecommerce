@@ -24,7 +24,7 @@ export const productSlice = createSlice({
       localStorage.setItem("cart", JSON.stringify(state.CartItem))
     }),
     clientAccount: ((state, action) => {
-      state.Account(action.payload)
+      state.Account = action.payload;
       localStorage.setItem("clientId", JSON.stringify(state.Account))
     }),
     Increment: ((state, action) => {

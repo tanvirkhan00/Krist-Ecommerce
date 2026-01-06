@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { getAuth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, sendEmailVerification } from "firebase/auth";
-import { clientAccount } from '../Slice/productSlice';
+import { clientAccount } from '../../Components/Slice/productSlice.jsx';
 import { useDispatch } from 'react-redux';
-import { AUTH_CONFIG } from './authConfig'; // Import auth configuration
+import { AUTH_CONFIG } from './AuthConfig.jsx'; // Import auth configuration
 
 // Image
 import title from "../../assets/LogoWebsite.png";
@@ -29,7 +29,7 @@ const LoginSection = () => {
     const [showVerificationAlert, setShowVerificationAlert] = useState(false);
     const [resendingVerification, setResendingVerification] = useState(false);
     const [currentUser, setCurrentUser] = useState(null);
-    
+
     const auth = getAuth();
     const navigate = useNavigate();
     const provider = new GoogleAuthProvider();
@@ -37,7 +37,7 @@ const LoginSection = () => {
 
     const handleLogin = (e) => {
         e.preventDefault();
-        
+
         // Reset errors
         setEmailErr('');
         setPassWordErr('');
@@ -69,10 +69,18 @@ const LoginSection = () => {
                 // Check if email verification is required
                 const isVerified = userCredential.user.emailVerified;
                 const requireVerification = AUTH_CONFIG.REQUIRE_EMAIL_VERIFICATION;
-                
+
                 if (isVerified || !requireVerification) {
                     // Allow login
-                    setSuccessMessage('Login successful! Redirecting...');
+                    const safeUser = {
+                        uid: userCredential.user.uid,
+                        email: userCredential.user.email,
+                        displayName: userCredential.user.displayName,
+                        photoURL: userCredential.user.photoURL,
+                        emailVerified: userCredential.user.emailVerified,
+                    };
+
+                    dispatch(clientAccount(safeUser));
                     dispatch(clientAccount(userCredential.user));
                     setTimeout(() => {
                         navigate('/');
@@ -87,24 +95,31 @@ const LoginSection = () => {
             })
             .catch((error) => {
                 setLoading(false);
-                const errorCode = error.code;
-                if (errorCode.includes('auth/invalid-credential') || errorCode.includes('auth/wrong-password')) {
-                    setPassWordErr('Invalid email or password');
-                } else if (errorCode.includes('auth/user-not-found')) {
-                    setEmailErr('No account found with this email');
-                } else if (errorCode.includes('auth/too-many-requests')) {
-                    setPassWordErr('Too many failed attempts. Please try again later');
-                } else {
-                    setPassWordErr('An error occurred. Please try again');
+                console.log(error.code, error.message);
+
+                switch (error.code) {
+                    case 'auth/user-not-found':
+                        setEmailErr('No account found with this email');
+                        break;
+                    case 'auth/wrong-password':
+                    case 'auth/invalid-login-credentials':
+                        setPassWordErr('Invalid email or password');
+                        break;
+                    case 'auth/too-many-requests':
+                        setPassWordErr('Too many attempts. Try later');
+                        break;
+                    default:
+                        setPassWordErr(error.message);
                 }
             });
+
     };
 
     const handleResendVerification = async () => {
         if (!currentUser) return;
-        
+
         setResendingVerification(true);
-        
+
         try {
             await sendEmailVerification(currentUser);
             setSuccessMessage('Verification email sent! Please check your inbox.');
@@ -164,15 +179,15 @@ const LoginSection = () => {
                     {/* Left Side - Image */}
                     <div className="hidden lg:block lg:basis-[48%] relative">
                         <div className="relative rounded-2xl overflow-hidden shadow-2xl">
-                            <img 
-                                className="absolute top-8 left-8 z-10 w-32 drop-shadow-lg" 
-                                src={title} 
-                                alt="Logo" 
+                            <img
+                                className="absolute top-8 left-8 z-10 w-32 drop-shadow-lg"
+                                src={title}
+                                alt="Logo"
                             />
-                            <img 
-                                className="w-full h-[700px] object-cover" 
-                                src={image} 
-                                alt="Login illustration" 
+                            <img
+                                className="w-full h-[700px] object-cover"
+                                src={image}
+                                alt="Login illustration"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
                         </div>
@@ -184,7 +199,7 @@ const LoginSection = () => {
                             {/* Header */}
                             <div className="mb-8">
                                 <h1 className="flex items-center gap-3 text-3xl font-bold text-gray-900 mb-2">
-                                    Welcome Back 
+                                    Welcome Back
                                     <span className="text-yellow-400 animate-bounce">
                                         <FaHandSparkles />
                                     </span>
@@ -219,11 +234,10 @@ const LoginSection = () => {
                                     <button
                                         onClick={handleResendVerification}
                                         disabled={resendingVerification}
-                                        className={`w-full py-2 px-4 rounded-lg text-sm font-medium transition-all ${
-                                            resendingVerification
-                                                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                                                : 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200'
-                                        }`}
+                                        className={`w-full py-2 px-4 rounded-lg text-sm font-medium transition-all ${resendingVerification
+                                            ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                            : 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200'
+                                            }`}
                                     >
                                         {resendingVerification ? (
                                             <span className="flex items-center justify-center gap-2">
@@ -255,11 +269,10 @@ const LoginSection = () => {
                                             id="email"
                                             onChange={handleEmail}
                                             value={email}
-                                            className={`w-full pl-10 pr-4 py-3 border-2 rounded-lg outline-none transition-all ${
-                                                emailErr 
-                                                    ? 'border-red-300 focus:border-red-500' 
-                                                    : 'border-gray-200 focus:border-blue-500'
-                                            }`}
+                                            className={`w-full pl-10 pr-4 py-3 border-2 rounded-lg outline-none transition-all ${emailErr
+                                                ? 'border-red-300 focus:border-red-500'
+                                                : 'border-gray-200 focus:border-blue-500'
+                                                }`}
                                             type="email"
                                             placeholder="john.doe@example.com"
                                         />
@@ -284,11 +297,10 @@ const LoginSection = () => {
                                             id="password"
                                             onChange={handlePass}
                                             value={passWord}
-                                            className={`w-full pl-10 pr-12 py-3 border-2 rounded-lg outline-none transition-all ${
-                                                passWordErr 
-                                                    ? 'border-red-300 focus:border-red-500' 
-                                                    : 'border-gray-200 focus:border-blue-500'
-                                            }`}
+                                            className={`w-full pl-10 pr-12 py-3 border-2 rounded-lg outline-none transition-all ${passWordErr
+                                                ? 'border-red-300 focus:border-red-500'
+                                                : 'border-gray-200 focus:border-blue-500'
+                                                }`}
                                             type={passShow ? 'text' : 'password'}
                                             placeholder="••••••••"
                                         />
@@ -321,8 +333,8 @@ const LoginSection = () => {
                                             Remember Me
                                         </label>
                                     </div>
-                                    <Link 
-                                        to="/forgetPassword" 
+                                    <Link
+                                        to="/forgetPassword"
                                         className="text-sm text-blue-600 hover:text-blue-700 font-medium"
                                     >
                                         Forgot Password?
@@ -333,11 +345,10 @@ const LoginSection = () => {
                                 <button
                                     type="submit"
                                     disabled={loading}
-                                    className={`w-full py-3 rounded-lg font-semibold text-white transition-all ${
-                                        loading
-                                            ? 'bg-gray-400 cursor-not-allowed'
-                                            : 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl'
-                                    }`}
+                                    className={`w-full py-3 rounded-lg font-semibold text-white transition-all ${loading
+                                        ? 'bg-gray-400 cursor-not-allowed'
+                                        : 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl'
+                                        }`}
                                 >
                                     {loading ? (
                                         <span className="flex items-center justify-center gap-2">
@@ -368,11 +379,10 @@ const LoginSection = () => {
                                 type="button"
                                 onClick={handleGoogle}
                                 disabled={googleLoading}
-                                className={`w-full flex items-center justify-center gap-3 py-3 border-2 rounded-lg font-medium transition-all ${
-                                    googleLoading
-                                        ? 'bg-gray-50 border-gray-300 cursor-not-allowed'
-                                        : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'
-                                }`}
+                                className={`w-full flex items-center justify-center gap-3 py-3 border-2 rounded-lg font-medium transition-all ${googleLoading
+                                    ? 'bg-gray-50 border-gray-300 cursor-not-allowed'
+                                    : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'
+                                    }`}
                             >
                                 {googleLoading ? (
                                     <>

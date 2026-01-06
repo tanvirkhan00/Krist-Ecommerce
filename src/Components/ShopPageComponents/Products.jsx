@@ -5,7 +5,7 @@ import { apiData } from '../ContextApi';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { getAuth } from 'firebase/auth';
-import { addToCart, WishList } from '../Slice/productSlice';
+import { addToCart, WishList } from '../Slice/productSlice.jsx';
 
 // Icons
 import { CiHeart } from "react-icons/ci";

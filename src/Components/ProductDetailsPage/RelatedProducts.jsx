@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { getAuth } from 'firebase/auth';
-import { addToCart, WishList } from '../Slice/productSlice';
+import { addToCart, WishList } from '../Slice/productSlice.jsx';
 import { useDispatch, useSelector } from 'react-redux';
 
 // Swiper imports

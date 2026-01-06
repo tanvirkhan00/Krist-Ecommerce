@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
-import { AUTH_CONFIG } from './authConfig'; // Import auth configuration
+import { AUTH_CONFIG } from './AuthConfig'; // Import auth configuration
 
 // Image
 import image from "../../assets/Image.png";
