@@ -10,9 +10,9 @@ import FilterCategory from "./Pages/FilterCategory"
 import ForgetPasswordPage from "./Pages/ForgetPasswordPage"
 import OtpPage from "./Pages/OtpPage"
 import WishListPage from "./Pages/WishListPage"
-import CartPage from "./Pages/CartPage"
 import ContactPage from "./Pages/ContactPage"
 import ResetPasswordPage from "./Pages/ResetPasswordPage"
+import CartPage from "./Pages/CartPage"
 
 
 

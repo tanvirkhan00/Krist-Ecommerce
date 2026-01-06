@@ -100,6 +100,7 @@ const Navbar = () => {
     0
   );
 
+  // Close cart when clicking outside
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (menuRef.current && !menuRef.current.contains(e.target)) {
@@ -109,15 +110,16 @@ const Navbar = () => {
         setShowMobileSearch(false);
       }
       if (cartRef.current && !cartRef.current.contains(e.target)) {
-        if (!e.target.closest(".cart-icon-container")) {
-          setCartShow(false);
-        }
+        setCartShow(false);
       }
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
+    if (cartShow || menuShow || showMobileSearch) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  }, [cartShow, menuShow, showMobileSearch]);
 
   return (
     <nav
@@ -136,7 +138,7 @@ const Navbar = () => {
         </p>
       </div>
 
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative">
         <div className="flex items-center justify-between h-[70px] lg:h-[80px]">
           {/* Logo Section */}
           <div className="flex items-center">
@@ -209,10 +211,13 @@ const Navbar = () => {
               </div>
 
               <li className="relative group">
-                <span className="block py-2 cursor-pointer hover:text-blue-600 transition-colors duration-300">
-                  <Link to="/contactPage" className="block">Contact Us</Link>
+                <Link
+                  to="/contactPage"
+                  className="block py-2 hover:text-blue-600 transition-colors duration-300"
+                >
+                  Contact Us
                   <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-600 to-purple-600 group-hover:w-full transition-all duration-300"></span>
-                </span>
+                </Link>
               </li>
             </ul>
           </div>
@@ -276,10 +281,7 @@ const Navbar = () => {
               </Link>
 
               {/* Cart */}
-              <div
-                className="cart-icon-container relative"
-                ref={cartRef}
-              >
+              <div className="relative">
                 <button
                   onClick={handleCart}
                   className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-gradient-to-r hover:from-blue-500 hover:to-purple-500 hover:text-white transition-all duration-300 group border border-gray-200 hover:border-transparent"
@@ -329,131 +331,135 @@ const Navbar = () => {
               </button>
             </div>
           </div>
+        </div>
 
-          {/* Cart Dropdown */}
-          {cartShow && (
-            <div className="absolute shadow-2xl bg-white w-[380px] max-h-[calc(100vh-100px)] top-full right-0 z-[60] rounded-2xl border border-gray-200 overflow-hidden mt-2">
-              {/* Cart Header */}
-              <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <h1 className="text-lg font-bold flex items-center gap-2">
-                    <FiShoppingBag />
-                    Shopping Cart
-                  </h1>
-                  <button
-                    onClick={() => setCartShow(false)}
-                    className="hover:bg-white/20 p-1 rounded-full transition-colors"
-                  >
-                    <IoClose className="text-xl" />
-                  </button>
-                </div>
-                <p className="text-sm text-blue-100">
-                  {cartLength} {cartLength === 1 ? "item" : "items"} in your
-                  cart
-                </p>
+        {/* Cart Dropdown - Positioned relative to container */}
+        {cartShow && (
+          <div 
+            ref={cartRef}
+            className="absolute shadow-2xl bg-white w-[380px] max-h-[calc(100vh-100px)] top-[70px] lg:top-[80px] right-4 sm:right-6 lg:right-8 z-[60] rounded-2xl border border-gray-200 overflow-hidden mt-2"
+          >
+            {/* Cart Header */}
+            <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4">
+              <div className="flex items-center justify-between mb-2">
+                <h1 className="text-lg font-bold flex items-center gap-2">
+                  <FiShoppingBag />
+                  Shopping Cart
+                </h1>
+                <button
+                  onClick={() => setCartShow(false)}
+                  className="hover:bg-white/20 p-1 rounded-full transition-colors"
+                >
+                  <IoClose className="text-xl" />
+                </button>
               </div>
+              <p className="text-sm text-blue-100">
+                {cartLength} {cartLength === 1 ? "item" : "items"} in your
+                cart
+              </p>
+            </div>
 
-              {/* Cart Items */}
-              <div className="p-4 max-h-[400px] overflow-y-auto">
-                {cartQuantity.length > 0 ? (
-                  <div className="space-y-3">
-                    {cartQuantity.map((item, index) => (
+            {/* Cart Items */}
+            <div className="p-4 max-h-[400px] overflow-y-auto">
+              {cartQuantity.length > 0 ? (
+                <div className="space-y-3">
+                  {cartQuantity.map((item, index) => (
+                    <div
+                      key={index}
+                      className="group relative bg-gray-50 rounded-xl p-3 hover:bg-gray-100 transition-all duration-200 border border-gray-200"
+                    >
                       <div
-                        key={index}
-                        className="group relative bg-gray-50 rounded-xl p-3 hover:bg-gray-100 transition-all duration-200 border border-gray-200"
+                        onClick={() => handleCartNavigate(item)}
+                        className="flex items-center gap-3 cursor-pointer"
                       >
-                        <div
-                          onClick={() => handleCartNavigate(item)}
-                          className="flex items-center gap-3 cursor-pointer"
-                        >
-                          <img
-                            className="h-[70px] w-[70px] object-cover rounded-lg border-2 border-white shadow-sm"
-                            src={item.thumbnail}
-                            alt={item.title}
-                          />
-                          <div className="flex-1 min-w-0">
-                            <h1 className="text-sm font-semibold text-gray-900 truncate mb-1">
-                              {item.title}
-                            </h1>
-                            <div className="flex items-center gap-2">
-                              <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full font-medium">
-                                Qty: {item.qty}
-                              </span>
-                              <span className="text-sm font-bold text-blue-600">
-                                ${(item.price * item.qty).toFixed(2)}
-                              </span>
-                            </div>
+                        <img
+                          className="h-[70px] w-[70px] object-cover rounded-lg border-2 border-white shadow-sm"
+                          src={item.thumbnail}
+                          alt={item.title}
+                        />
+                        <div className="flex-1 min-w-0">
+                          <h1 className="text-sm font-semibold text-gray-900 truncate mb-1">
+                            {item.title}
+                          </h1>
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full font-medium">
+                              Qty: {item.qty}
+                            </span>
+                            <span className="text-sm font-bold text-blue-600">
+                              ${(item.price * item.qty).toFixed(2)}
+                            </span>
                           </div>
                         </div>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleTrash(index);
-                          }}
-                          className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-all duration-200 hover:scale-110"
-                        >
-                          <IoTrashOutline className="text-sm" />
-                        </button>
                       </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-12">
-                    <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <BsHandbag className="text-4xl text-gray-400" />
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleTrash(index);
+                        }}
+                        className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-all duration-200 hover:scale-110"
+                        aria-label="Remove item"
+                      >
+                        <IoTrashOutline className="text-sm" />
+                      </button>
                     </div>
-                    <p className="text-gray-500 font-medium">
-                      Your cart is empty
-                    </p>
-                    <p className="text-sm text-gray-400 mt-1">
-                      Add items to get started
-                    </p>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <BsHandbag className="text-4xl text-gray-400" />
                   </div>
-                )}
-              </div>
-
-              {/* Cart Footer */}
-              {cartQuantity.length > 0 && (
-                <div className="border-t border-gray-200 p-4 bg-gray-50">
-                  <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-200">
-                    <span className="text-lg font-bold text-gray-900">
-                      Subtotal
-                    </span>
-                    <span className="text-2xl font-bold text-blue-600">
-                      ${total.toFixed(2)}
-                    </span>
-                  </div>
-
-                  <div className="space-y-2">
-                    <button
-                      onClick={() => {
-                        navigate("/cartPage");
-                        setCartShow(false);
-                      }}
-                      className="w-full bg-white border-2 border-blue-600 text-blue-600 rounded-full py-3 font-semibold hover:bg-blue-50 transition-all duration-300"
-                    >
-                      View Cart
-                    </button>
-                    <button
-                      onClick={() => {
-                        navigate("/");
-                        setCartShow(false);
-                      }}
-                      className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full py-3 font-semibold hover:shadow-lg hover:scale-105 transition-all duration-300"
-                    >
-                      Checkout
-                    </button>
-                  </div>
-
-                  <div className="flex items-center justify-center gap-2 mt-3 text-xs text-gray-500">
-                    <FaCheck className="text-green-500" />
-                    <span>Secure checkout</span>
-                  </div>
+                  <p className="text-gray-500 font-medium">
+                    Your cart is empty
+                  </p>
+                  <p className="text-sm text-gray-400 mt-1">
+                    Add items to get started
+                  </p>
                 </div>
               )}
             </div>
-          )}
-        </div>
+
+            {/* Cart Footer */}
+            {cartQuantity.length > 0 && (
+              <div className="border-t border-gray-200 p-4 bg-gray-50">
+                <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-200">
+                  <span className="text-lg font-bold text-gray-900">
+                    Subtotal
+                  </span>
+                  <span className="text-2xl font-bold text-blue-600">
+                    ${total.toFixed(2)}
+                  </span>
+                </div>
+
+                <div className="space-y-2">
+                  <button
+                    onClick={() => {
+                      navigate("/cartPage");
+                      setCartShow(false);
+                    }}
+                    className="w-full bg-white border-2 border-blue-600 text-blue-600 rounded-full py-3 font-semibold hover:bg-blue-50 transition-all duration-300"
+                  >
+                    View Cart
+                  </button>
+                  <button
+                    onClick={() => {
+                      navigate("/checkout");
+                      setCartShow(false);
+                    }}
+                    className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full py-3 font-semibold hover:shadow-lg hover:scale-105 transition-all duration-300"
+                  >
+                    Checkout
+                  </button>
+                </div>
+
+                <div className="flex items-center justify-center gap-2 mt-3 text-xs text-gray-500">
+                  <FaCheck className="text-green-500" />
+                  <span>Secure checkout</span>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Mobile Search Panel */}
@@ -512,7 +518,7 @@ const Navbar = () => {
             onClick={() => setMenuShow(false)}
           />
           <div className="lg:hidden fixed top-[112px] left-0 w-full max-w-sm h-[calc(100vh-112px)] bg-white z-50 overflow-y-auto transition-all duration-300 shadow-2xl">
-            <div className="p-6">
+            <div className="p-6" ref={menuRef}>
               {/* Mobile Menu Header */}
               <div className="mb-6 pb-6 border-b border-gray-200">
                 <h2 className="text-xl font-bold text-gray-900 mb-2">Menu</h2>
@@ -570,10 +576,14 @@ const Navbar = () => {
                 </div>
 
                 <li>
-                  <span className="flex items-center gap-3 py-3 px-4 rounded-xl hover:bg-gray-50 text-gray-700 hover:text-blue-600 font-medium transition-colors cursor-pointer group">
+                  <Link
+                    to="/contactPage"
+                    className="flex items-center gap-3 py-3 px-4 rounded-xl hover:bg-gray-50 text-gray-700 hover:text-blue-600 font-medium transition-colors cursor-pointer group"
+                    onClick={() => setMenuShow(false)}
+                  >
                     <span className="w-1.5 h-1.5 bg-blue-600 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
                     Contact Us
-                  </span>
+                  </Link>
                 </li>
               </ul>
 
