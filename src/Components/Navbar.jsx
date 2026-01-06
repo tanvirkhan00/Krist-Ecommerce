@@ -443,7 +443,7 @@ const Navbar = () => {
                   </button>
                   <button
                     onClick={() => {
-                      navigate("/checkout");
+                      navigate("/");
                       setCartShow(false);
                     }}
                     className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full py-3 font-semibold hover:shadow-lg hover:scale-105 transition-all duration-300"
