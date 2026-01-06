@@ -12,6 +12,7 @@ import OtpPage from "./Pages/OtpPage"
 import WishListPage from "./Pages/WishListPage"
 import CartPage from "./Pages/CartPage"
 import ContactPage from "./Pages/ContactPage"
+import ResetPasswordPage from "./Pages/ResetPasswordPage"
 
 
 
@@ -30,6 +31,7 @@ function App() {
       <Route path="/otp" element={<OtpPage />} />
       <Route path="/wishList" element={<WishListPage />} />
       <Route path="/contactPage" element={<ContactPage />} />
+      <Route path="/resetPassword" element={<ResetPasswordPage />} />
     </Route>
   ))
 

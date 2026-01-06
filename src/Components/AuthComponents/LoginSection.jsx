@@ -1,156 +1,417 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { getAuth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, sendEmailVerification } from "firebase/auth";
 import { clientAccount } from '../Slice/productSlice';
 import { useDispatch } from 'react-redux';
-
-
-
-
+import { AUTH_CONFIG } from './authConfig'; // Import auth configuration
 
 // Image
 import title from "../../assets/LogoWebsite.png";
 import image from "../../assets/Image.png";
 
 // Icons
-import { FaEyeSlash, FaHandSparkles } from "react-icons/fa";
-import { MdErrorOutline } from "react-icons/md";
+import { MdErrorOutline, MdCheckCircle } from "react-icons/md";
 import { FcGoogle } from "react-icons/fc";
-import { FaRegEye } from "react-icons/fa";
-
-
-
-
-
+import { IoEyeOffOutline, IoEyeOutline } from 'react-icons/io5';
+import { FiMail, FiLock } from "react-icons/fi";
+import { FaHandSparkles } from "react-icons/fa";
 
 const LoginSection = () => {
-
-    let [email, setEmail] = useState('')
-    let [emailErr, setEmailErr] = useState('')
-    let [passWord, setPassWord] = useState('')
-    let [passWordErr, setPassWordErr] = useState('')
-    let [passShow, setPassShow] = useState(false)
+    const [email, setEmail] = useState('');
+    const [emailErr, setEmailErr] = useState('');
+    const [passWord, setPassWord] = useState('');
+    const [passWordErr, setPassWordErr] = useState('');
+    const [passShow, setPassShow] = useState(false);
+    const [rememberMe, setRememberMe] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [googleLoading, setGoogleLoading] = useState(false);
+    const [successMessage, setSuccessMessage] = useState('');
+    const [showVerificationAlert, setShowVerificationAlert] = useState(false);
+    const [resendingVerification, setResendingVerification] = useState(false);
+    const [currentUser, setCurrentUser] = useState(null);
+    
     const auth = getAuth();
-    let navigate = useNavigate();
+    const navigate = useNavigate();
     const provider = new GoogleAuthProvider();
-    let dispatch = useDispatch()
+    const dispatch = useDispatch();
 
+    const handleLogin = (e) => {
+        e.preventDefault();
+        
+        // Reset errors
+        setEmailErr('');
+        setPassWordErr('');
+        setSuccessMessage('');
+        setShowVerificationAlert(false);
 
+        let hasError = false;
 
-    let handleLogin = (e) => {
-        e.preventDefault()
+        // Email validation
         if (!email) {
-            setEmailErr('Please Input Your Email')
-        } else {
-            if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
-                setEmailErr('Please Input Valid Email Address')
-            }
+            setEmailErr('Please enter your email');
+            hasError = true;
+        } else if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
+            setEmailErr('Please enter a valid email address');
+            hasError = true;
         }
 
+        // Password validation
         if (!passWord) {
-            setPassWordErr('Please Input Password')
-        } else {
-            if (!/(?=.*[a-z])/.test(passWord)) {
-                setPassWordErr("Must be one lowerCase")
-            } else if (!/(?=.*[A-Z])/.test(passWord)) {
-                setPassWordErr('Must contain at least one uppercase')
-            } else if (!/(?=.*[0-9])/.test(passWord)) {
-                setPassWordErr('Must contain at least one number')
-            } else if (!/(?=.*[!@#$%^&*])/.test(passWord)) {
-                setPassWordErr('Must contain at least one special character')
-            } else if (!/(?=.{8,})/.test(passWord)) {
-                setPassWordErr('Must at least 8 character')
-            }
+            setPassWordErr('Please enter your password');
+            hasError = true;
         }
-        if (email && passWord && /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
-            signInWithEmailAndPassword(auth, email, passWord)
-                .then((user) => {
-                    if (user.user.emailVerified === true) {
-                        setTimeout(() => {
-                            navigate('/')
-                        }, 2000)
-                        dispatch(clientAccount(user.user))
-                    } else {
-                        setPassWordErr('Please verify your email')
-                    }
 
-                })
-                .catch((error) => {
-                    const errorCode = error.code;
-                    if (errorCode.includes('auth/invalid-credential')) {
-                        setPassWordErr('Please Input Valid Credentials');
-                    }
-                });
-        }
-    }
-    let handleEmail = (e) => {
-        setEmail(e.target.value)
-        setEmailErr('')
-    }
-    let handlePass = (e) => {
-        setPassWord(e.target.value)
-        setPassWordErr('')
-    }
-    let handleGoogle = (e) => {
-        signInWithPopup(auth, provider)
-            .then(() => {
-                navigate('/');
+        if (hasError) return;
 
-            }).catch((error) => {
+        setLoading(true);
+        signInWithEmailAndPassword(auth, email, passWord)
+            .then((userCredential) => {
+                // Check if email verification is required
+                const isVerified = userCredential.user.emailVerified;
+                const requireVerification = AUTH_CONFIG.REQUIRE_EMAIL_VERIFICATION;
+                
+                if (isVerified || !requireVerification) {
+                    // Allow login
+                    setSuccessMessage('Login successful! Redirecting...');
+                    dispatch(clientAccount(userCredential.user));
+                    setTimeout(() => {
+                        navigate('/');
+                    }, 1500);
+                } else {
+                    // Email not verified and verification is required
+                    setLoading(false);
+                    setCurrentUser(userCredential.user);
+                    setShowVerificationAlert(true);
+                    setPassWordErr('Please verify your email before logging in');
+                }
+            })
+            .catch((error) => {
+                setLoading(false);
                 const errorCode = error.code;
+                if (errorCode.includes('auth/invalid-credential') || errorCode.includes('auth/wrong-password')) {
+                    setPassWordErr('Invalid email or password');
+                } else if (errorCode.includes('auth/user-not-found')) {
+                    setEmailErr('No account found with this email');
+                } else if (errorCode.includes('auth/too-many-requests')) {
+                    setPassWordErr('Too many failed attempts. Please try again later');
+                } else {
+                    setPassWordErr('An error occurred. Please try again');
+                }
             });
-    }
-    let handleEye = () => {
-        setPassShow(!passShow)
-    }
+    };
+
+    const handleResendVerification = async () => {
+        if (!currentUser) return;
+        
+        setResendingVerification(true);
+        
+        try {
+            await sendEmailVerification(currentUser);
+            setSuccessMessage('Verification email sent! Please check your inbox.');
+            setPassWordErr('');
+        } catch (error) {
+            setPassWordErr('Failed to send verification email. Please try again.');
+        } finally {
+            setResendingVerification(false);
+        }
+    };
+
+    const handleEmail = (e) => {
+        setEmail(e.target.value);
+        setEmailErr('');
+    };
+
+    const handlePass = (e) => {
+        setPassWord(e.target.value);
+        setPassWordErr('');
+    };
+
+    const handleGoogle = () => {
+        setGoogleLoading(true);
+        signInWithPopup(auth, provider)
+            .then((result) => {
+                setSuccessMessage('Login successful! Redirecting...');
+                dispatch(clientAccount(result.user));
+                setTimeout(() => {
+                    navigate('/');
+                }, 1500);
+            })
+            .catch((error) => {
+                setGoogleLoading(false);
+                const errorCode = error.code;
+                if (errorCode.includes('auth/popup-closed-by-user')) {
+                    // User closed popup, no error message needed
+                } else if (errorCode.includes('auth/cancelled-popup-request')) {
+                    // Popup cancelled, no error message needed
+                } else {
+                    setPassWordErr('Google sign-in failed. Please try again');
+                }
+            });
+    };
+
+    const handleEye = () => {
+        setPassShow(!passShow);
+    };
+
+    const handleRememberMe = (e) => {
+        setRememberMe(e.target.checked);
+    };
 
     return (
-        <>
-            <section>
-                <div className="container mt-[150px]">
-                    <div className='flex items-center flex-wrap gap-10 '>
-                        <div className='basis-[100%] md:basis-[50%] relative'>
-                            <img className='absolute top-10 left-10' src={title} alt="" />
-                            <img className='w-full h-[700px]' src={image} alt="" />
-                        </div>
-                        <div className='basis-[100%] md:basis-[30%] flex flex-col gap-3'>
-                            <h1 className='flex items-center gap-2 text-[45px] font-bold font-serif'>Welcome <span className='text-yellow-400 animate-bounce'><FaHandSparkles /></span></h1>
-                            <p className='text-slate-500'>Please login here</p>
-                            <form className='flex flex-col gap-3'>
-                                <div className='flex flex-col'>
-                                    <label htmlFor="email">Email Address</label>
-                                    <input onChange={handleEmail} className='border-2 border-slate-300 px-2 py-2 rounded-md outline-none borderHover' type="email" placeholder='abje@gmail.com' />
-                                    {emailErr &&
-                                        <p className='flex items-center gap-1'><span className='text-red-500'><MdErrorOutline /></span> {emailErr}</p>
-                                    }
-                                </div>
-                                <div className='flex  flex-col relative'>
-                                    <label htmlFor="pass">Password</label>
-                                    <input onChange={handlePass} className='border-2 border-slate-300 px-2 py-2 rounded-md outline-none borderHover' type={passShow ? 'text' : 'password'} />
-                                    <span onClick={handleEye} className='absolute right-3 top-10 '>{passShow ? <FaEyeSlash /> : <FaRegEye />
-                                    }</span>
-
-                                    {passWordErr &&
-                                        <p className='flex items-center gap-1'><span className='text-red-500'><MdErrorOutline /></span> {passWordErr}</p>
-                                    }
-                                </div>
-                                <div className='flex justify-between items-center'>
-                                    <div className='flex items-center gap-2'>
-                                        <input type="checkbox" id='pass' />
-                                        <label for='pass'>Remember Me</label>
-                                    </div>
-                                    <p><Link to="/forgetPassword">Forget Password?</Link></p>
-                                </div>
-                                <button onClick={handleLogin} className='border-black border-2 rounded-md py-2 text-[20px] font-semibold btnHover'>Login</button>
-                            </form>
-                            <p>If You Haven't Account.  <span className='font-semibold border-b-2 border-slate-600'><Link to="/signUp"> SignUp</Link></span></p>
-                            <p onClick={handleGoogle} className='flex items-center gap-2 justify-center border-2 border-slate-500 py-2 rounded-md btnHover'>Login with Google <span><FcGoogle /></span></p>
+        <section className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-12">
+            <div className="container mx-auto px-4 mt-[100px]">
+                <div className="flex items-center justify-center lg:justify-between flex-wrap gap-8 lg:gap-12 max-w-7xl mx-auto">
+                    {/* Left Side - Image */}
+                    <div className="hidden lg:block lg:basis-[48%] relative">
+                        <div className="relative rounded-2xl overflow-hidden shadow-2xl">
+                            <img 
+                                className="absolute top-8 left-8 z-10 w-32 drop-shadow-lg" 
+                                src={title} 
+                                alt="Logo" 
+                            />
+                            <img 
+                                className="w-full h-[700px] object-cover" 
+                                src={image} 
+                                alt="Login illustration" 
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
                         </div>
                     </div>
-                </div>
-            </section>
 
-        </>
+                    {/* Right Side - Form */}
+                    <div className="w-full lg:basis-[45%] max-w-md">
+                        <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+                            {/* Header */}
+                            <div className="mb-8">
+                                <h1 className="flex items-center gap-3 text-3xl font-bold text-gray-900 mb-2">
+                                    Welcome Back 
+                                    <span className="text-yellow-400 animate-bounce">
+                                        <FaHandSparkles />
+                                    </span>
+                                </h1>
+                                <p className="text-gray-600">
+                                    Please login to continue
+                                </p>
+                            </div>
+
+                            {/* Success Message */}
+                            {successMessage && (
+                                <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-start gap-3">
+                                    <MdCheckCircle className="text-green-600 text-xl flex-shrink-0 mt-0.5" />
+                                    <p className="text-green-800 text-sm">{successMessage}</p>
+                                </div>
+                            )}
+
+                            {/* Email Verification Alert */}
+                            {showVerificationAlert && (
+                                <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                                    <div className="flex items-start gap-3 mb-3">
+                                        <MdErrorOutline className="text-yellow-600 text-xl flex-shrink-0 mt-0.5" />
+                                        <div className="flex-1">
+                                            <p className="text-yellow-800 text-sm font-medium mb-1">
+                                                Email Verification Required
+                                            </p>
+                                            <p className="text-yellow-700 text-xs">
+                                                Please verify your email address to continue. Check your inbox for the verification link.
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <button
+                                        onClick={handleResendVerification}
+                                        disabled={resendingVerification}
+                                        className={`w-full py-2 px-4 rounded-lg text-sm font-medium transition-all ${
+                                            resendingVerification
+                                                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                                : 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200'
+                                        }`}
+                                    >
+                                        {resendingVerification ? (
+                                            <span className="flex items-center justify-center gap-2">
+                                                <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                </svg>
+                                                Sending...
+                                            </span>
+                                        ) : (
+                                            'Resend Verification Email'
+                                        )}
+                                    </button>
+                                </div>
+                            )}
+
+                            {/* Form */}
+                            <form onSubmit={handleLogin} className="space-y-5">
+                                {/* Email */}
+                                <div>
+                                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                                        Email Address
+                                    </label>
+                                    <div className="relative">
+                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <FiMail className="text-gray-400" />
+                                        </div>
+                                        <input
+                                            id="email"
+                                            onChange={handleEmail}
+                                            value={email}
+                                            className={`w-full pl-10 pr-4 py-3 border-2 rounded-lg outline-none transition-all ${
+                                                emailErr 
+                                                    ? 'border-red-300 focus:border-red-500' 
+                                                    : 'border-gray-200 focus:border-blue-500'
+                                            }`}
+                                            type="email"
+                                            placeholder="john.doe@example.com"
+                                        />
+                                    </div>
+                                    {emailErr && (
+                                        <p className="flex items-center gap-1 mt-2 text-red-600 text-sm">
+                                            <MdErrorOutline /> {emailErr}
+                                        </p>
+                                    )}
+                                </div>
+
+                                {/* Password */}
+                                <div>
+                                    <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+                                        Password
+                                    </label>
+                                    <div className="relative">
+                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <FiLock className="text-gray-400" />
+                                        </div>
+                                        <input
+                                            id="password"
+                                            onChange={handlePass}
+                                            value={passWord}
+                                            className={`w-full pl-10 pr-12 py-3 border-2 rounded-lg outline-none transition-all ${
+                                                passWordErr 
+                                                    ? 'border-red-300 focus:border-red-500' 
+                                                    : 'border-gray-200 focus:border-blue-500'
+                                            }`}
+                                            type={passShow ? 'text' : 'password'}
+                                            placeholder="••••••••"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={handleEye}
+                                            className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                                        >
+                                            {passShow ? <IoEyeOutline size={20} /> : <IoEyeOffOutline size={20} />}
+                                        </button>
+                                    </div>
+                                    {passWordErr && (
+                                        <p className="flex items-center gap-1 mt-2 text-red-600 text-sm">
+                                            <MdErrorOutline /> {passWordErr}
+                                        </p>
+                                    )}
+                                </div>
+
+                                {/* Remember Me & Forgot Password */}
+                                <div className="flex justify-between items-center">
+                                    <div className="flex items-center gap-2">
+                                        <input
+                                            type="checkbox"
+                                            id="rememberMe"
+                                            checked={rememberMe}
+                                            onChange={handleRememberMe}
+                                            className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                                        />
+                                        <label htmlFor="rememberMe" className="text-sm text-gray-700">
+                                            Remember Me
+                                        </label>
+                                    </div>
+                                    <Link 
+                                        to="/forgetPassword" 
+                                        className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                                    >
+                                        Forgot Password?
+                                    </Link>
+                                </div>
+
+                                {/* Login Button */}
+                                <button
+                                    type="submit"
+                                    disabled={loading}
+                                    className={`w-full py-3 rounded-lg font-semibold text-white transition-all ${
+                                        loading
+                                            ? 'bg-gray-400 cursor-not-allowed'
+                                            : 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl'
+                                    }`}
+                                >
+                                    {loading ? (
+                                        <span className="flex items-center justify-center gap-2">
+                                            <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                            </svg>
+                                            Logging In...
+                                        </span>
+                                    ) : (
+                                        'Login'
+                                    )}
+                                </button>
+                            </form>
+
+                            {/* Divider */}
+                            <div className="relative my-6">
+                                <div className="absolute inset-0 flex items-center">
+                                    <div className="w-full border-t border-gray-300"></div>
+                                </div>
+                                <div className="relative flex justify-center text-sm">
+                                    <span className="px-4 bg-white text-gray-500">Or continue with</span>
+                                </div>
+                            </div>
+
+                            {/* Google Login */}
+                            <button
+                                type="button"
+                                onClick={handleGoogle}
+                                disabled={googleLoading}
+                                className={`w-full flex items-center justify-center gap-3 py-3 border-2 rounded-lg font-medium transition-all ${
+                                    googleLoading
+                                        ? 'bg-gray-50 border-gray-300 cursor-not-allowed'
+                                        : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'
+                                }`}
+                            >
+                                {googleLoading ? (
+                                    <>
+                                        <svg className="animate-spin h-5 w-5 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                        <span className="text-gray-600">Signing in...</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <FcGoogle size={24} />
+                                        <span className="text-gray-700">Login with Google</span>
+                                    </>
+                                )}
+                            </button>
+
+                            {/* Sign Up Link */}
+                            <div className="mt-6 text-center">
+                                <p className="text-gray-600">
+                                    Don't have an account?{' '}
+                                    <Link
+                                        to="/signUp"
+                                        className="text-blue-600 hover:text-blue-700 font-semibold"
+                                    >
+                                        Sign Up
+                                    </Link>
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Additional Info */}
+                        <p className="text-center text-sm text-gray-500 mt-6">
+                            Secure login • Your data is protected
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
     );
 };
 
