@@ -23,11 +23,13 @@ const Navbar = () => {
   const [menuShow, setMenuShow] = useState(false);
   const [showMobileSearch, setShowMobileSearch] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const menuRef = useRef();
   const searchRef = useRef();
   const cartRef = useRef();
+  const profileRef = useRef();
 
   // Scroll effect
   useEffect(() => {
@@ -100,7 +102,7 @@ const Navbar = () => {
     0
   );
 
-  // Close cart when clicking outside
+  // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (menuRef.current && !menuRef.current.contains(e.target)) {
@@ -112,14 +114,17 @@ const Navbar = () => {
       if (cartRef.current && !cartRef.current.contains(e.target)) {
         setCartShow(false);
       }
+      if (profileRef.current && !profileRef.current.contains(e.target)) {
+        setShowProfile(false);
+      }
     };
 
-    if (cartShow || menuShow || showMobileSearch) {
+    if (cartShow || menuShow || showMobileSearch || showProfile) {
       document.addEventListener("mousedown", handleClickOutside);
     }
     
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [cartShow, menuShow, showMobileSearch]);
+  }, [cartShow, menuShow, showMobileSearch, showProfile]);
 
   return (
     <nav
@@ -293,6 +298,72 @@ const Navbar = () => {
                     </span>
                   )}
                 </button>
+              </div>
+
+              {/* User Profile Icon */}
+              <div className="relative" ref={profileRef}>
+                <button
+                  onClick={() => setShowProfile(!showProfile)}
+                  className="hidden sm:flex items-center justify-center w-10 h-10 rounded-full hover:bg-gradient-to-r hover:from-blue-500 hover:to-purple-500 hover:text-white transition-all duration-300 group border border-gray-200 hover:border-transparent"
+                >
+                  <FiUser className="text-xl group-hover:scale-110 transition-transform" />
+                </button>
+
+                {/* Profile Dropdown */}
+                {showProfile && (
+                  <div className="absolute right-0 top-full mt-2 w-[240px] bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden z-[60]">
+                    <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+                          <FiUser className="text-2xl" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold">John Doe</h3>
+                          <p className="text-xs text-blue-100">john@example.com</p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="py-2">
+                      <Link
+                        to="/profilePage"
+                        onClick={() => setShowProfile(false)}
+                        className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 text-gray-700 hover:text-blue-600 transition-colors"
+                      >
+                        <FiUser className="text-lg" />
+                        <span className="text-sm font-medium">My Profile</span>
+                      </Link>
+                      <Link
+                        to="/orders"
+                        onClick={() => setShowProfile(false)}
+                        className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 text-gray-700 hover:text-blue-600 transition-colors"
+                      >
+                        <FiShoppingBag className="text-lg" />
+                        <span className="text-sm font-medium">My Orders</span>
+                      </Link>
+                      <Link
+                        to="/wishList"
+                        onClick={() => setShowProfile(false)}
+                        className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 text-gray-700 hover:text-blue-600 transition-colors"
+                      >
+                        <CiHeart className="text-xl" />
+                        <span className="text-sm font-medium">Wishlist</span>
+                      </Link>
+                    </div>
+                    
+                    <div className="border-t border-gray-200 py-2">
+                      <button
+                        onClick={() => {
+                          setShowProfile(false);
+                          navigate("/login");
+                        }}
+                        className="w-full text-left flex items-center gap-3 px-4 py-3 hover:bg-red-50 text-red-600 transition-colors"
+                      >
+                        <span className="text-sm font-medium">Logout</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Login Button */}

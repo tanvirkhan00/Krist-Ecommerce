@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
-import { Decrement, deletProduct, Increment } from './Slice/productSlice';
+import { Decrement, deletProduct, Increment } from './Slice/productSlice.jsx';
 
 // Icons
 import { FiMinus, FiPlus, FiShoppingBag, FiTag, FiTruck, FiLock, FiArrowRight } from 'react-icons/fi';
@@ -90,7 +90,7 @@ const CartPageComponent = () => {
                             Add <span className="font-bold">${(150 - subtotal).toFixed(2)}</span> more to get <span className="font-bold">FREE shipping</span>!
                         </p>
                         <div className="flex-1 bg-gray-200 rounded-full h-2 ml-4">
-                            <div 
+                            <div
                                 className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full transition-all duration-500"
                                 style={{ width: `${Math.min((subtotal / 150) * 100, 100)}%` }}
                             ></div>
@@ -305,7 +305,7 @@ const CartPageComponent = () => {
                                     <span>Subtotal</span>
                                     <span className="font-semibold">${subtotal.toFixed(2)}</span>
                                 </div>
-                                
+
                                 {discountApplied && (
                                     <div className="flex justify-between text-green-600">
                                         <span>Discount (10%)</span>
