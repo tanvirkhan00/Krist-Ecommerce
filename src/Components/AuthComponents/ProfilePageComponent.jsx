@@ -1,5 +1,8 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { getAuth, signOut } from "firebase/auth";
+import { getFirestore, doc, getDoc, updateDoc } from "firebase/firestore";
+import { useSelector } from "react-redux";
 
 // Icons
 import {
@@ -19,22 +22,34 @@ import {
 } from "react-icons/fi";
 import { BsHandbag } from "react-icons/bs";
 import { IoLocationOutline } from "react-icons/io5";
+import { MdCheckCircle, MdErrorOutline } from "react-icons/md";
 
-const ProfilePageComponents = () => {
+const ProfilePageComponent = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [activeTab, setActiveTab] = useState("profile");
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
   const [profileData, setProfileData] = useState({
-    name: "John Doe",
-    email: "john.doe@example.com",
-    phone: "+1 (555) 123-4567",
-    address: "123 Main Street, New York, NY 10001",
-    city: "New York",
-    state: "NY",
-    zipCode: "10001",
-    country: "United States",
+    name: "",
+    email: "",
+    phone: "",
+    address: "",
+    city: "",
+    state: "",
+    zipCode: "",
+    country: "",
   });
 
   const [editData, setEditData] = useState({ ...profileData });
+
+  const auth = getAuth();
+  const db = getFirestore();
+  const navigate = useNavigate();
+  
+  // Get user from Redux store
+  const currentUser = useSelector((state) => state.product?.user);
 
   // Mock data for orders
   const recentOrders = [
@@ -61,16 +76,113 @@ const ProfilePageComponents = () => {
     },
   ];
 
+  // Fetch user data from Firestore
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const user = auth.currentUser;
+        
+        if (!user) {
+          navigate('/login');
+          return;
+        }
+
+        const userDocRef = doc(db, "users", user.uid);
+        const userDoc = await getDoc(userDocRef);
+
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          const data = {
+            name: userData.name || user.displayName || "",
+            email: userData.email || user.email || "",
+            phone: userData.phone || "",
+            address: userData.address || "",
+            city: userData.city || "",
+            state: userData.state || "",
+            zipCode: userData.zipCode || "",
+            country: userData.country || "",
+          };
+          setProfileData(data);
+          setEditData(data);
+        } else {
+          // If document doesn't exist, create it with basic info
+          const basicData = {
+            name: user.displayName || "",
+            email: user.email || "",
+            phone: "",
+            address: "",
+            city: "",
+            state: "",
+            zipCode: "",
+            country: "",
+          };
+          setProfileData(basicData);
+          setEditData(basicData);
+        }
+        
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        setErrorMessage("Failed to load profile data");
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, [auth, db, navigate]);
+
   const handleEditToggle = () => {
     if (isEditing) {
       setEditData({ ...profileData });
     }
     setIsEditing(!isEditing);
+    setSuccessMessage('');
+    setErrorMessage('');
   };
 
-  const handleSave = () => {
-    setProfileData({ ...editData });
-    setIsEditing(false);
+  const handleSave = async () => {
+    setSaving(true);
+    setSuccessMessage('');
+    setErrorMessage('');
+
+    try {
+      const user = auth.currentUser;
+      
+      if (!user) {
+        setErrorMessage("You must be logged in to update profile");
+        setSaving(false);
+        return;
+      }
+
+      const userDocRef = doc(db, "users", user.uid);
+      
+      // Update Firestore document
+      await updateDoc(userDocRef, {
+        name: editData.name,
+        phone: editData.phone,
+        address: editData.address,
+        city: editData.city,
+        state: editData.state,
+        zipCode: editData.zipCode,
+        country: editData.country,
+        updatedAt: new Date().toISOString()
+      });
+
+      setProfileData({ ...editData });
+      setIsEditing(false);
+      setSuccessMessage('Profile updated successfully!');
+      
+      // Clear success message after 3 seconds
+      setTimeout(() => {
+        setSuccessMessage('');
+      }, 3000);
+      
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      setErrorMessage("Failed to update profile. Please try again.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleChange = (e) => {
@@ -78,6 +190,15 @@ const ProfilePageComponents = () => {
       ...editData,
       [e.target.name]: e.target.value,
     });
+  };
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      navigate('/login');
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
   };
 
   const getStatusColor = (status) => {
@@ -93,6 +214,20 @@ const ProfilePageComponents = () => {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 pt-[112px] pb-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
+        <div className="text-center">
+          <svg className="animate-spin h-12 w-12 text-blue-600 mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          <p className="text-gray-600 font-medium">Loading your profile...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 pt-[112px] pb-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
@@ -106,6 +241,21 @@ const ProfilePageComponents = () => {
           </p>
         </div>
 
+        {/* Success/Error Messages */}
+        {successMessage && (
+          <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-start gap-3">
+            <MdCheckCircle className="text-green-600 text-xl flex-shrink-0 mt-0.5" />
+            <p className="text-green-800 text-sm">{successMessage}</p>
+          </div>
+        )}
+
+        {errorMessage && (
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
+            <MdErrorOutline className="text-red-600 text-xl flex-shrink-0 mt-0.5" />
+            <p className="text-red-800 text-sm">{errorMessage}</p>
+          </div>
+        )}
+
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Sidebar */}
           <div className="lg:col-span-3">
@@ -113,15 +263,23 @@ const ProfilePageComponents = () => {
               {/* Profile Picture Section */}
               <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-6 text-center">
                 <div className="relative inline-block">
-                  <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mx-auto mb-3 shadow-lg">
-                    <FiUser className="text-4xl text-blue-600" />
+                  <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mx-auto mb-3 shadow-lg overflow-hidden">
+                    {auth.currentUser?.photoURL ? (
+                      <img 
+                        src={auth.currentUser.photoURL} 
+                        alt="Profile" 
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <FiUser className="text-4xl text-blue-600" />
+                    )}
                   </div>
                   <button className="absolute bottom-2 right-0 bg-white text-blue-600 p-2 rounded-full shadow-lg hover:scale-110 transition-transform">
                     <FiCamera className="text-sm" />
                   </button>
                 </div>
                 <h3 className="text-xl font-bold text-white mb-1">
-                  {profileData.name}
+                  {profileData.name || "User"}
                 </h3>
                 <p className="text-sm text-blue-100">{profileData.email}</p>
               </div>
@@ -173,7 +331,10 @@ const ProfilePageComponents = () => {
                 </button>
 
                 <div className="border-t border-gray-200 mt-4 pt-4">
-                  <button className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-600 hover:bg-red-50 transition-all">
+                  <button 
+                    onClick={handleLogout}
+                    className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-600 hover:bg-red-50 transition-all"
+                  >
                     <FiLogOut className="text-lg" />
                     <span className="font-medium">Logout</span>
                   </button>
@@ -188,7 +349,7 @@ const ProfilePageComponents = () => {
             {activeTab === "profile" && (
               <div className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
                 {/* Header */}
-                <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-6 flex items-center justify-between">
+                <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-6 flex flex-wrap items-center justify-between gap-4">
                   <div>
                     <h2 className="text-2xl font-bold text-white mb-1">
                       Profile Information
@@ -209,14 +370,22 @@ const ProfilePageComponents = () => {
                     <div className="flex gap-2">
                       <button
                         onClick={handleSave}
-                        className="flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded-full font-semibold hover:bg-green-600 transition-all"
+                        disabled={saving}
+                        className={`flex items-center gap-2 px-4 py-2 rounded-full font-semibold transition-all ${
+                          saving 
+                            ? 'bg-gray-400 text-white cursor-not-allowed' 
+                            : 'bg-green-500 text-white hover:bg-green-600'
+                        }`}
                       >
                         <FiSave />
-                        <span className="hidden sm:inline">Save</span>
+                        <span className="hidden sm:inline">
+                          {saving ? 'Saving...' : 'Save'}
+                        </span>
                       </button>
                       <button
                         onClick={handleEditToggle}
-                        className="flex items-center gap-2 bg-white text-red-600 px-4 py-2 rounded-full font-semibold hover:bg-red-50 transition-all"
+                        disabled={saving}
+                        className="flex items-center gap-2 bg-white text-red-600 px-4 py-2 rounded-full font-semibold hover:bg-red-50 transition-all disabled:opacity-50"
                       >
                         <FiX />
                         <span className="hidden sm:inline">Cancel</span>
@@ -244,7 +413,7 @@ const ProfilePageComponents = () => {
                         />
                       ) : (
                         <div className="bg-gray-50 rounded-xl px-4 py-3 text-gray-900 font-medium">
-                          {profileData.name}
+                          {profileData.name || "Not set"}
                         </div>
                       )}
                     </div>
@@ -255,19 +424,10 @@ const ProfilePageComponents = () => {
                         <FiMail className="text-blue-600" />
                         Email Address
                       </label>
-                      {isEditing ? (
-                        <input
-                          type="email"
-                          name="email"
-                          value={editData.email}
-                          onChange={handleChange}
-                          className="w-full border-2 border-gray-300 rounded-xl px-4 py-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all"
-                        />
-                      ) : (
-                        <div className="bg-gray-50 rounded-xl px-4 py-3 text-gray-900 font-medium">
-                          {profileData.email}
-                        </div>
-                      )}
+                      <div className="bg-gray-50 rounded-xl px-4 py-3 text-gray-900 font-medium">
+                        {profileData.email}
+                      </div>
+                      <p className="text-xs text-gray-500 mt-1">Email cannot be changed</p>
                     </div>
 
                     {/* Phone */}
@@ -283,10 +443,11 @@ const ProfilePageComponents = () => {
                           value={editData.phone}
                           onChange={handleChange}
                           className="w-full border-2 border-gray-300 rounded-xl px-4 py-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all"
+                          placeholder="+1 (555) 123-4567"
                         />
                       ) : (
                         <div className="bg-gray-50 rounded-xl px-4 py-3 text-gray-900 font-medium">
-                          {profileData.phone}
+                          {profileData.phone || "Not set"}
                         </div>
                       )}
                     </div>
@@ -304,10 +465,11 @@ const ProfilePageComponents = () => {
                           value={editData.address}
                           onChange={handleChange}
                           className="w-full border-2 border-gray-300 rounded-xl px-4 py-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all"
+                          placeholder="123 Main Street"
                         />
                       ) : (
                         <div className="bg-gray-50 rounded-xl px-4 py-3 text-gray-900 font-medium">
-                          {profileData.address}
+                          {profileData.address || "Not set"}
                         </div>
                       )}
                     </div>
@@ -325,10 +487,11 @@ const ProfilePageComponents = () => {
                           value={editData.city}
                           onChange={handleChange}
                           className="w-full border-2 border-gray-300 rounded-xl px-4 py-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all"
+                          placeholder="New York"
                         />
                       ) : (
                         <div className="bg-gray-50 rounded-xl px-4 py-3 text-gray-900 font-medium">
-                          {profileData.city}
+                          {profileData.city || "Not set"}
                         </div>
                       )}
                     </div>
@@ -345,10 +508,11 @@ const ProfilePageComponents = () => {
                           value={editData.state}
                           onChange={handleChange}
                           className="w-full border-2 border-gray-300 rounded-xl px-4 py-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all"
+                          placeholder="NY"
                         />
                       ) : (
                         <div className="bg-gray-50 rounded-xl px-4 py-3 text-gray-900 font-medium">
-                          {profileData.state}
+                          {profileData.state || "Not set"}
                         </div>
                       )}
                     </div>
@@ -365,10 +529,11 @@ const ProfilePageComponents = () => {
                           value={editData.zipCode}
                           onChange={handleChange}
                           className="w-full border-2 border-gray-300 rounded-xl px-4 py-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all"
+                          placeholder="10001"
                         />
                       ) : (
                         <div className="bg-gray-50 rounded-xl px-4 py-3 text-gray-900 font-medium">
-                          {profileData.zipCode}
+                          {profileData.zipCode || "Not set"}
                         </div>
                       )}
                     </div>
@@ -385,10 +550,11 @@ const ProfilePageComponents = () => {
                           value={editData.country}
                           onChange={handleChange}
                           className="w-full border-2 border-gray-300 rounded-xl px-4 py-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all"
+                          placeholder="United States"
                         />
                       ) : (
                         <div className="bg-gray-50 rounded-xl px-4 py-3 text-gray-900 font-medium">
-                          {profileData.country}
+                          {profileData.country || "Not set"}
                         </div>
                       )}
                     </div>
@@ -618,4 +784,4 @@ const ProfilePageComponents = () => {
   );
 };
 
-export default ProfilePageComponents;
+export default ProfilePageComponent;

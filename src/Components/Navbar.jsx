@@ -122,17 +122,16 @@ const Navbar = () => {
     if (cartShow || menuShow || showMobileSearch || showProfile) {
       document.addEventListener("mousedown", handleClickOutside);
     }
-    
+
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [cartShow, menuShow, showMobileSearch, showProfile]);
 
   return (
     <nav
-      className={`fixed w-full z-50 left-0 top-0 transition-all duration-300 ${
-        scrolled
+      className={`fixed w-full z-50 left-0 top-0 transition-all duration-300 ${scrolled
           ? "bg-white/95 backdrop-blur-lg shadow-lg"
           : "bg-white/90 backdrop-blur-md"
-      }`}
+        }`}
     >
       {/* Top Bar */}
       <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-2 text-center text-sm">
@@ -323,7 +322,7 @@ const Navbar = () => {
                         </div>
                       </div>
                     </div>
-                    
+
                     <div className="py-2">
                       <Link
                         to="/profilePage"
@@ -334,7 +333,7 @@ const Navbar = () => {
                         <span className="text-sm font-medium">My Profile</span>
                       </Link>
                       <Link
-                        to="/orders"
+                        to="/"
                         onClick={() => setShowProfile(false)}
                         className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 text-gray-700 hover:text-blue-600 transition-colors"
                       >
@@ -350,7 +349,7 @@ const Navbar = () => {
                         <span className="text-sm font-medium">Wishlist</span>
                       </Link>
                     </div>
-                    
+
                     <div className="border-t border-gray-200 py-2">
                       <button
                         onClick={() => {
@@ -406,7 +405,7 @@ const Navbar = () => {
 
         {/* Cart Dropdown - Positioned relative to container */}
         {cartShow && (
-          <div 
+          <div
             ref={cartRef}
             className="absolute shadow-2xl bg-white w-[380px] max-h-[calc(100vh-100px)] top-[70px] lg:top-[80px] right-4 sm:right-6 lg:right-8 z-[60] rounded-2xl border border-gray-200 overflow-hidden mt-2"
           >

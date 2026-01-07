@@ -1,12 +1,12 @@
 import React from "react";
-import ProfilePageComponents from "../Components/AuthComponents/ProfilePageComponents";
+import ProfilePageComponent from "../Components/AuthComponents/ProfilePageComponent";
 
 const ProfilePage = () => {
   return (
     <>
 
-    <ProfilePageComponents />
-    
+    <ProfilePageComponent/>
+
     </>
     );
 }

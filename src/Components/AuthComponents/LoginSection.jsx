@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { getAuth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, sendEmailVerification } from "firebase/auth";
+import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
 import { clientAccount } from '../../Components/Slice/productSlice.jsx';
 import { useDispatch } from 'react-redux';
-import { AUTH_CONFIG } from './AuthConfig.jsx'; // Import auth configuration
+import { AUTH_CONFIG } from './AuthConfig.jsx';
 
 // Image
 import title from "../../assets/LogoWebsite.png";
@@ -31,6 +32,7 @@ const LoginSection = () => {
     const [currentUser, setCurrentUser] = useState(null);
 
     const auth = getAuth();
+    const db = getFirestore();
     const navigate = useNavigate();
     const provider = new GoogleAuthProvider();
     const dispatch = useDispatch();
@@ -81,7 +83,8 @@ const LoginSection = () => {
                     };
 
                     dispatch(clientAccount(safeUser));
-                    dispatch(clientAccount(userCredential.user));
+                    setSuccessMessage('Login successful! Redirecting...');
+                    
                     setTimeout(() => {
                         navigate('/');
                     }, 1500);
@@ -103,6 +106,7 @@ const LoginSection = () => {
                         break;
                     case 'auth/wrong-password':
                     case 'auth/invalid-login-credentials':
+                    case 'auth/invalid-credential':
                         setPassWordErr('Invalid email or password');
                         break;
                     case 'auth/too-many-requests':
@@ -112,7 +116,6 @@ const LoginSection = () => {
                         setPassWordErr(error.message);
                 }
             });
-
     };
 
     const handleResendVerification = async () => {
@@ -141,27 +144,63 @@ const LoginSection = () => {
         setPassWordErr('');
     };
 
-    const handleGoogle = () => {
+    const handleGoogle = async () => {
         setGoogleLoading(true);
-        signInWithPopup(auth, provider)
-            .then((result) => {
-                setSuccessMessage('Login successful! Redirecting...');
-                dispatch(clientAccount(result.user));
-                setTimeout(() => {
-                    navigate('/');
-                }, 1500);
-            })
-            .catch((error) => {
-                setGoogleLoading(false);
-                const errorCode = error.code;
-                if (errorCode.includes('auth/popup-closed-by-user')) {
-                    // User closed popup, no error message needed
-                } else if (errorCode.includes('auth/cancelled-popup-request')) {
-                    // Popup cancelled, no error message needed
-                } else {
-                    setPassWordErr('Google sign-in failed. Please try again');
-                }
-            });
+        try {
+            const result = await signInWithPopup(auth, provider);
+            const user = result.user;
+
+            // Check if user document exists in Firestore
+            const userDocRef = doc(db, "users", user.uid);
+            const userDoc = await getDoc(userDocRef);
+
+            // If user document doesn't exist, create it
+            if (!userDoc.exists()) {
+                const nameParts = user.displayName ? user.displayName.split(' ') : ['', ''];
+                await setDoc(userDocRef, {
+                    firstName: nameParts[0] || '',
+                    lastName: nameParts.slice(1).join(' ') || '',
+                    name: user.displayName || '',
+                    email: user.email,
+                    phone: user.phoneNumber || '',
+                    address: '',
+                    city: '',
+                    state: '',
+                    zipCode: '',
+                    country: '',
+                    photoURL: user.photoURL || '',
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                });
+            }
+
+            const safeUser = {
+                uid: user.uid,
+                email: user.email,
+                displayName: user.displayName,
+                photoURL: user.photoURL,
+                emailVerified: user.emailVerified,
+            };
+
+            dispatch(clientAccount(safeUser));
+            setSuccessMessage('Login successful! Redirecting...');
+            
+            setTimeout(() => {
+                navigate('/');
+            }, 1500);
+        } catch (error) {
+            setGoogleLoading(false);
+            const errorCode = error.code;
+            console.error('Google sign-in error:', errorCode);
+            
+            if (errorCode.includes('auth/popup-closed-by-user')) {
+                // User closed popup, no error message needed
+            } else if (errorCode.includes('auth/cancelled-popup-request')) {
+                // Popup cancelled, no error message needed
+            } else {
+                setPassWordErr('Google sign-in failed. Please try again');
+            }
+        }
     };
 
     const handleEye = () => {

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
-import { AUTH_CONFIG } from './AuthConfig'; // Import auth configuration
+import { getAuth, createUserWithEmailAndPassword, sendEmailVerification, updateProfile } from "firebase/auth";
+import { getFirestore, doc, setDoc } from "firebase/firestore";
+import { AUTH_CONFIG } from './AuthConfig';
 
 // Image
 import image from "../../assets/Image.png";
@@ -29,8 +30,9 @@ const SignUpSection = () => {
 
     const navigate = useNavigate();
     const auth = getAuth();
+    const db = getFirestore();
 
-    const handleSignUp = (e) => {
+    const handleSignUp = async (e) => {
         e.preventDefault();
 
         // Reset errors
@@ -93,45 +95,64 @@ const SignUpSection = () => {
 
         // Create user
         setLoading(true);
-        createUserWithEmailAndPassword(auth, email, passWord)
-            .then(() => {
-                // Conditionally send verification email based on config
-                if (AUTH_CONFIG.SEND_VERIFICATION_EMAIL) {
-                    sendEmailVerification(auth.currentUser)
-                        .then(() => {
-                            setSuccessMessage('Account created successfully! Please check your email for verification.');
-                            setTimeout(() => {
-                                navigate('/login');
-                            }, 2500);
-                        })
-                        .catch((error) => {
-                            console.error('Email verification error:', error.code);
-                            setSuccessMessage('Account created! Redirecting to login...');
-                            setTimeout(() => {
-                                navigate('/login');
-                            }, 2000);
-                        });
-                } else {
-                    // Skip email verification
-                    setSuccessMessage('Account created successfully! Redirecting to login...');
-                    setTimeout(() => {
-                        navigate('/login');
-                    }, 2000);
-                }
-            })
-            .catch((error) => {
-                setLoading(false);
-                const errorCode = error.code;
-                if (errorCode.includes('auth/email-already-in-use')) {
-                    setEmailErr('This email is already registered');
-                } else if (errorCode.includes('auth/weak-password')) {
-                    setPassWordErr('Password is too weak');
-                } else if (errorCode.includes('auth/invalid-email')) {
-                    setEmailErr('Invalid email format');
-                } else {
-                    setEmailErr('An error occurred. Please try again.');
-                }
+        try {
+            const userCredential = await createUserWithEmailAndPassword(auth, email, passWord);
+            const user = userCredential.user;
+
+            // Update user profile with display name
+            const fullName = `${fName.trim()} ${lName.trim()}`;
+            await updateProfile(user, {
+                displayName: fullName
             });
+
+            // Store user data in Firestore
+            await setDoc(doc(db, "users", user.uid), {
+                firstName: fName.trim(),
+                lastName: lName.trim(),
+                name: fullName,
+                email: email,
+                phone: '',
+                address: '',
+                city: '',
+                state: '',
+                zipCode: '',
+                country: '',
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            });
+
+            // Conditionally send verification email based on config
+            if (AUTH_CONFIG.SEND_VERIFICATION_EMAIL) {
+                try {
+                    await sendEmailVerification(user);
+                    setSuccessMessage('Account created successfully! Please check your email for verification.');
+                } catch (error) {
+                    console.error('Email verification error:', error.code);
+                    setSuccessMessage('Account created! Redirecting to login...');
+                }
+            } else {
+                setSuccessMessage('Account created successfully! Redirecting to login...');
+            }
+
+            setTimeout(() => {
+                navigate('/login');
+            }, 2500);
+
+        } catch (error) {
+            setLoading(false);
+            const errorCode = error.code;
+            console.error('Signup error:', errorCode, error.message);
+            
+            if (errorCode.includes('auth/email-already-in-use')) {
+                setEmailErr('This email is already registered');
+            } else if (errorCode.includes('auth/weak-password')) {
+                setPassWordErr('Password is too weak');
+            } else if (errorCode.includes('auth/invalid-email')) {
+                setEmailErr('Invalid email format');
+            } else {
+                setEmailErr('An error occurred. Please try again.');
+            }
+        }
     };
 
     const handleFName = (e) => {

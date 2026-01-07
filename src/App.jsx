@@ -13,7 +13,7 @@ import WishListPage from "./Pages/WishListPage"
 import ContactPage from "./Pages/ContactPage"
 import ResetPasswordPage from "./Pages/ResetPasswordPage"
 import CartPage from "./Pages/CartPage"
-import ProfilePageComponents from "./Components/AuthComponents/ProfilePageComponents"
+import ProfilePage from "./Pages/ProfilePage"
 
 
 
@@ -33,7 +33,7 @@ function App() {
       <Route path="/wishList" element={<WishListPage />} />
       <Route path="/contactPage" element={<ContactPage />} />
       <Route path="/resetPassword" element={<ResetPasswordPage />} />
-      <Route path="/profilePage" element={<ProfilePageComponents />} />
+      <Route path="/profilePage" element={<ProfilePage />} />
     </Route>
   ))
 

@@ -13,7 +13,7 @@ import "swiper/css/effect-coverflow";
 import "swiper/css/pagination";
 
 // Images
-import Story from "../assets/fashion.png";
+import Story from "../assets/Fashion.png";
 import Story1 from "../assets/Fashion1.png";
 import Story2 from "../assets/Fashion2.png";
 import Story3 from "../assets/Fashion3.png";
