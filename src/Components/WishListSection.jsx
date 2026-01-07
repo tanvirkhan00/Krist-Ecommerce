@@ -206,7 +206,7 @@ const WishListSection = () => {
                         {/* Continue Shopping Button */}
                         <div className="mt-8 flex justify-center">
                             <button 
-                                onClick={() => navigate('/products')}
+                                onClick={() => navigate('/shop')}
                                 className="px-8 py-3 border-2 border-black text-black hover:bg-black hover:text-white rounded-lg transition-all font-medium"
                             >
                                 Continue Shopping

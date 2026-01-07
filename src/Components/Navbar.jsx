@@ -325,7 +325,7 @@ const Navbar = () => {
 
                     <div className="py-2">
                       <Link
-                        to="/profilePage"
+                        to="/profile"
                         onClick={() => setShowProfile(false)}
                         className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 text-gray-700 hover:text-blue-600 transition-colors"
                       >
