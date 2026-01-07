@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { getAuth, createUserWithEmailAndPassword, sendEmailVerification, updateProfile } from "firebase/auth";
 import { getFirestore, doc, setDoc } from "firebase/firestore";
-import { AUTH_CONFIG } from './AuthConfig';
 
 // Image
 import image from "../../assets/Image.png";
@@ -121,22 +120,10 @@ const SignUpSection = () => {
                 updatedAt: new Date().toISOString()
             });
 
-            // Conditionally send verification email based on config
-            if (AUTH_CONFIG.SEND_VERIFICATION_EMAIL) {
-                try {
-                    await sendEmailVerification(user);
-                    setSuccessMessage('Account created successfully! Please check your email for verification.');
-                } catch (error) {
-                    console.error('Email verification error:', error.code);
-                    setSuccessMessage('Account created! Redirecting to login...');
-                }
-            } else {
-                setSuccessMessage('Account created successfully! Redirecting to login...');
-            }
-
+            setSuccessMessage('Account created successfully! Redirecting to login...');
             setTimeout(() => {
                 navigate('/login');
-            }, 2500);
+            }, 2000);
 
         } catch (error) {
             setLoading(false);

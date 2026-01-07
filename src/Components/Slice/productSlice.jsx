@@ -5,7 +5,8 @@ export const productSlice = createSlice({
   initialState: {
     CartItem: localStorage.getItem("cart") ? JSON.parse(localStorage.getItem("cart")) : [],
     Account: localStorage.getItem("clientId") ? JSON.parse(localStorage.getItem("clientId")) : [],
-    WishListItem: localStorage.getItem("wishcart") ? JSON.parse(localStorage.getItem("wishcart")) : []
+    WishListItem: localStorage.getItem("wishcart") ? JSON.parse(localStorage.getItem("wishcart")) : [],
+    user: null, // Add user state for authentication
   },
   reducers: {
     addToCart: ((state, action) => {
@@ -25,6 +26,7 @@ export const productSlice = createSlice({
     }),
     clientAccount: ((state, action) => {
       state.Account = action.payload;
+      state.user = action.payload; // Also store in user for authentication
       localStorage.setItem("clientId", JSON.stringify(state.Account))
     }),
     Increment: ((state, action) => {
@@ -44,7 +46,7 @@ export const productSlice = createSlice({
         state.WishListItem = [...state.WishListItem, action.payload]
         localStorage.setItem("wishcart", JSON.stringify(state.WishListItem))
       } else {
-        alert("Already Added WishLish. Thank You !")
+        alert("Already Added WishList. Thank You !")
         localStorage.setItem("wishcart", JSON.stringify(state.WishListItem))
       }
     }),
