@@ -33,7 +33,7 @@ function App() {
       <Route path="/wishList" element={<WishListPage />} />
       <Route path="/contactPage" element={<ContactPage />} />
       <Route path="/resetPassword" element={<ResetPasswordPage />} />
-      <Route path="/profilePage" element={<ProfilePage />} />
+      <Route path="/profile" element={<ProfilePage />} />
     </Route>
   ))
 

@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { getAuth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, sendEmailVerification } from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
 import { clientAccount } from '../../Components/Slice/productSlice.jsx';
 import { useDispatch } from 'react-redux';
-import { AUTH_CONFIG } from './AuthConfig.jsx';
 
 // Image
 import title from "../../assets/LogoWebsite.png";
@@ -27,9 +26,6 @@ const LoginSection = () => {
     const [loading, setLoading] = useState(false);
     const [googleLoading, setGoogleLoading] = useState(false);
     const [successMessage, setSuccessMessage] = useState('');
-    const [showVerificationAlert, setShowVerificationAlert] = useState(false);
-    const [resendingVerification, setResendingVerification] = useState(false);
-    const [currentUser, setCurrentUser] = useState(null);
 
     const auth = getAuth();
     const db = getFirestore();
@@ -44,7 +40,6 @@ const LoginSection = () => {
         setEmailErr('');
         setPassWordErr('');
         setSuccessMessage('');
-        setShowVerificationAlert(false);
 
         let hasError = false;
 
@@ -68,33 +63,20 @@ const LoginSection = () => {
         setLoading(true);
         signInWithEmailAndPassword(auth, email, passWord)
             .then((userCredential) => {
-                // Check if email verification is required
-                const isVerified = userCredential.user.emailVerified;
-                const requireVerification = AUTH_CONFIG.REQUIRE_EMAIL_VERIFICATION;
+                const safeUser = {
+                    uid: userCredential.user.uid,
+                    email: userCredential.user.email,
+                    displayName: userCredential.user.displayName,
+                    photoURL: userCredential.user.photoURL,
+                    emailVerified: userCredential.user.emailVerified,
+                };
 
-                if (isVerified || !requireVerification) {
-                    // Allow login
-                    const safeUser = {
-                        uid: userCredential.user.uid,
-                        email: userCredential.user.email,
-                        displayName: userCredential.user.displayName,
-                        photoURL: userCredential.user.photoURL,
-                        emailVerified: userCredential.user.emailVerified,
-                    };
-
-                    dispatch(clientAccount(safeUser));
-                    setSuccessMessage('Login successful! Redirecting...');
-                    
-                    setTimeout(() => {
-                        navigate('/');
-                    }, 1500);
-                } else {
-                    // Email not verified and verification is required
-                    setLoading(false);
-                    setCurrentUser(userCredential.user);
-                    setShowVerificationAlert(true);
-                    setPassWordErr('Please verify your email before logging in');
-                }
+                dispatch(clientAccount(safeUser));
+                setSuccessMessage('Login successful! Redirecting...');
+                
+                setTimeout(() => {
+                    navigate('/');
+                }, 1500);
             })
             .catch((error) => {
                 setLoading(false);
@@ -116,22 +98,6 @@ const LoginSection = () => {
                         setPassWordErr(error.message);
                 }
             });
-    };
-
-    const handleResendVerification = async () => {
-        if (!currentUser) return;
-
-        setResendingVerification(true);
-
-        try {
-            await sendEmailVerification(currentUser);
-            setSuccessMessage('Verification email sent! Please check your inbox.');
-            setPassWordErr('');
-        } catch (error) {
-            setPassWordErr('Failed to send verification email. Please try again.');
-        } finally {
-            setResendingVerification(false);
-        }
     };
 
     const handleEmail = (e) => {
@@ -253,43 +219,6 @@ const LoginSection = () => {
                                 <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-start gap-3">
                                     <MdCheckCircle className="text-green-600 text-xl flex-shrink-0 mt-0.5" />
                                     <p className="text-green-800 text-sm">{successMessage}</p>
-                                </div>
-                            )}
-
-                            {/* Email Verification Alert */}
-                            {showVerificationAlert && (
-                                <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-                                    <div className="flex items-start gap-3 mb-3">
-                                        <MdErrorOutline className="text-yellow-600 text-xl flex-shrink-0 mt-0.5" />
-                                        <div className="flex-1">
-                                            <p className="text-yellow-800 text-sm font-medium mb-1">
-                                                Email Verification Required
-                                            </p>
-                                            <p className="text-yellow-700 text-xs">
-                                                Please verify your email address to continue. Check your inbox for the verification link.
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <button
-                                        onClick={handleResendVerification}
-                                        disabled={resendingVerification}
-                                        className={`w-full py-2 px-4 rounded-lg text-sm font-medium transition-all ${resendingVerification
-                                            ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                                            : 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200'
-                                            }`}
-                                    >
-                                        {resendingVerification ? (
-                                            <span className="flex items-center justify-center gap-2">
-                                                <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                                </svg>
-                                                Sending...
-                                            </span>
-                                        ) : (
-                                            'Resend Verification Email'
-                                        )}
-                                    </button>
                                 </div>
                             )}
 
