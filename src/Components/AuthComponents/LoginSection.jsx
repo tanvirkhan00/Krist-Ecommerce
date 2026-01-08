@@ -4,6 +4,7 @@ import { getAuth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvide
 import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
 import { clientAccount } from '../../Components/Slice/productSlice.jsx';
 import { useDispatch } from 'react-redux';
+import { getSafeUserObject } from '../../Utils/authUtils.js';
 
 // Image
 import title from "../../assets/LogoWebsite.png";
@@ -63,17 +64,15 @@ const LoginSection = () => {
         setLoading(true);
         signInWithEmailAndPassword(auth, email, passWord)
             .then((userCredential) => {
-                const safeUser = {
-                    uid: userCredential.user.uid,
-                    email: userCredential.user.email,
-                    displayName: userCredential.user.displayName,
-                    photoURL: userCredential.user.photoURL,
-                    emailVerified: userCredential.user.emailVerified,
-                };
-
+                const safeUser = getSafeUserObject(userCredential.user);
+                
+                // Dispatch to Redux store
                 dispatch(clientAccount(safeUser));
+                
+                // Show success message
                 setSuccessMessage('Login successful! Redirecting...');
                 
+                // Navigate after delay
                 setTimeout(() => {
                     navigate('/');
                 }, 1500);
@@ -92,10 +91,13 @@ const LoginSection = () => {
                         setPassWordErr('Invalid email or password');
                         break;
                     case 'auth/too-many-requests':
-                        setPassWordErr('Too many attempts. Try later');
+                        setPassWordErr('Too many attempts. Please try again later');
+                        break;
+                    case 'auth/network-request-failed':
+                        setPassWordErr('Network error. Please check your connection');
                         break;
                     default:
-                        setPassWordErr(error.message);
+                        setPassWordErr('An error occurred. Please try again');
                 }
             });
     };
@@ -140,15 +142,11 @@ const LoginSection = () => {
                 });
             }
 
-            const safeUser = {
-                uid: user.uid,
-                email: user.email,
-                displayName: user.displayName,
-                photoURL: user.photoURL,
-                emailVerified: user.emailVerified,
-            };
-
+            const safeUser = getSafeUserObject(user);
+            
+            // Dispatch to Redux store
             dispatch(clientAccount(safeUser));
+            
             setSuccessMessage('Login successful! Redirecting...');
             
             setTimeout(() => {
@@ -163,6 +161,8 @@ const LoginSection = () => {
                 // User closed popup, no error message needed
             } else if (errorCode.includes('auth/cancelled-popup-request')) {
                 // Popup cancelled, no error message needed
+            } else if (errorCode.includes('auth/network-request-failed')) {
+                setPassWordErr('Network error. Please check your connection');
             } else {
                 setPassWordErr('Google sign-in failed. Please try again');
             }
