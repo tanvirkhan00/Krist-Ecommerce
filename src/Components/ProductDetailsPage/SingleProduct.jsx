@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { useParams, useNavigate, Link } from 'react-router';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { apiData } from '../ContextApi';
 import RelatedProducts from '../ProductDetailsPage/RelatedProducts';
 import { useDispatch } from 'react-redux';
@@ -14,7 +14,7 @@ import { MdErrorOutline } from "react-icons/md";
 import { HiMiniSparkles } from "react-icons/hi2";
 
 const SingleProduct = () => {
-    let products = useContext(apiData);
+    const products = useContext(apiData);
     const { id } = useParams();
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -105,6 +105,7 @@ const SingleProduct = () => {
         navigate('/signUp');
     };
 
+    // Loading State
     if (!products || products.length === 0) {
         return (
             <div className='flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30'>
@@ -118,6 +119,7 @@ const SingleProduct = () => {
 
     const product = products.find((item) => item.id === parseInt(id));
 
+    // Product Not Found
     if (!product) {
         return (
             <div className='flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30'>
@@ -125,7 +127,7 @@ const SingleProduct = () => {
                     <div className="w-24 h-24 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center mx-auto mb-6">
                         <span className="text-5xl">🔍</span>
                     </div>
-                    <h3 className="text-2xl font-bold text-gray-900 mb-3">Product not found</h3>
+                    <h3 className="text-2xl font-bold text-gray-900 mb-3 heading-font">Product not found</h3>
                     <p className="text-gray-600 mb-6">The product you're looking for doesn't exist</p>
                     <Link to="/products">
                         <button className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-3 rounded-xl font-bold hover:shadow-xl hover:scale-105 transition-all duration-300">
@@ -137,11 +139,11 @@ const SingleProduct = () => {
         );
     }
 
-    let filterCategory = products.filter((item) => item.category === product.category && item.id !== product.id);
+    const filterCategory = products.filter((item) => item.category === product.category && item.id !== product.id);
     const productImages = product.images && product.images.length > 0 ? product.images : [product.thumbnail];
 
     // Add Cart with Authentication
-    let handleCart = () => {
+    const handleCart = () => {
         if (!checkAuth()) return;
         
         dispatch(addToCart({ ...product, qty: quantity }));
@@ -149,7 +151,7 @@ const SingleProduct = () => {
     };
 
     // WishList with Authentication
-    let handleWishList = () => {
+    const handleWishList = () => {
         if (!checkAuth()) return;
         
         dispatch(WishList({ ...product, qty: 1 }));
@@ -183,7 +185,7 @@ const SingleProduct = () => {
     // Calculate Average Rating
     const averageRating = reviews.length > 0 
         ? (reviews.reduce((acc, rev) => acc + rev.rating, 0) / reviews.length).toFixed(1)
-        : product.rating;
+        : product.rating || 0;
 
     const sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
 
@@ -222,9 +224,27 @@ const SingleProduct = () => {
                 .image-zoom:hover {
                     transform: scale(1.1);
                 }
+
+                .custom-scrollbar::-webkit-scrollbar {
+                    width: 6px;
+                }
+                
+                .custom-scrollbar::-webkit-scrollbar-track {
+                    background: #f1f5f9;
+                    border-radius: 10px;
+                }
+                
+                .custom-scrollbar::-webkit-scrollbar-thumb {
+                    background: #cbd5e1;
+                    border-radius: 10px;
+                }
+                
+                .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+                    background: #94a3b8;
+                }
             `}</style>
 
-            <section className="bg-gradient-to-br from-slate-50 via-white to-blue-50/30 py-8 mt-[150px]">
+            <section className="bg-gradient-to-br from-slate-50 via-white to-blue-50/30 min-h-screen py-8 mt-[150px]">
                 {/* Success Toast */}
                 {successToast.show && (
                     <div className="fixed top-24 right-6 z-[60] animate-slide-in">
@@ -280,15 +300,17 @@ const SingleProduct = () => {
 
                 <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
                     {/* Breadcrumb */}
-                    <div className="text-sm text-gray-600 mb-8 flex items-center gap-2">
+                    <div className="text-sm text-gray-600 mb-8 flex items-center gap-2 flex-wrap">
                         <Link to="/" className="hover:text-purple-600 transition">Home</Link>
+                        <span>/</span>
+                        <Link to="/products" className="hover:text-purple-600 transition">Products</Link>
                         <span>/</span>
                         <Link to="/products" className="hover:text-purple-600 transition capitalize">{product.category}</Link>
                         <span>/</span>
-                        <span className="text-gray-900 font-semibold line-clamp-1">{product.title}</span>
+                        <span className="text-gray-900 font-semibold truncate max-w-[200px] sm:max-w-none">{product.title}</span>
                     </div>
 
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 mb-12">
                         {/* Product Images */}
                         <div className="space-y-4">
                             {/* Main Image */}
@@ -338,14 +360,14 @@ const SingleProduct = () => {
                                 </div>
                                 
                                 <div className="flex items-start justify-between gap-4 mb-3">
-                                    <h1 className="text-4xl font-bold heading-font text-gray-900">{product.title}</h1>
+                                    <h1 className="text-3xl sm:text-4xl font-bold heading-font text-gray-900">{product.title}</h1>
                                     {product.availabilityStatus === 'In Stock' && (
-                                        <span className="text-sm font-semibold text-green-600 bg-green-50 px-3 py-1.5 rounded-full whitespace-nowrap">
+                                        <span className="text-sm font-semibold text-green-600 bg-green-50 px-3 py-1.5 rounded-full whitespace-nowrap flex-shrink-0">
                                             ✓ In Stock
                                         </span>
                                     )}
                                 </div>
-                                <p className="text-gray-600 text-lg leading-relaxed">{product.description}</p>
+                                <p className="text-gray-600 text-base sm:text-lg leading-relaxed">{product.description}</p>
                             </div>
 
                             {/* Rating */}
@@ -363,16 +385,16 @@ const SingleProduct = () => {
                                     onClick={() => setActiveTab('reviews')}
                                     className="text-sm text-purple-600 hover:text-purple-700 font-medium hover:underline"
                                 >
-                                    {reviews.length} Reviews
+                                    {reviews.length} {reviews.length === 1 ? 'Review' : 'Reviews'}
                                 </button>
                             </div>
 
                             {/* Price */}
                             <div className="bg-gradient-to-br from-gray-50 to-blue-50/30 rounded-2xl p-6 border border-gray-200">
-                                <div className="flex items-baseline gap-3 mb-2">
-                                    <p className="text-4xl font-bold text-gray-900">${product.price}</p>
+                                <div className="flex items-baseline gap-3 mb-2 flex-wrap">
+                                    <p className="text-3xl sm:text-4xl font-bold text-gray-900">${product.price}</p>
                                     {product.discountPercentage > 0 && (
-                                        <p className="text-xl text-gray-400 line-through">
+                                        <p className="text-lg sm:text-xl text-gray-400 line-through">
                                             ${(product.price / (1 - product.discountPercentage / 100)).toFixed(2)}
                                         </p>
                                     )}
@@ -388,7 +410,7 @@ const SingleProduct = () => {
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="bg-white rounded-xl p-4 border border-gray-200">
                                     <p className="text-sm text-gray-500 mb-1">Brand</p>
-                                    <p className="font-semibold text-gray-900">{product.brand}</p>
+                                    <p className="font-semibold text-gray-900">{product.brand || 'N/A'}</p>
                                 </div>
                                 <div className="bg-white rounded-xl p-4 border border-gray-200">
                                     <p className="text-sm text-gray-500 mb-1">Stock</p>
@@ -425,21 +447,23 @@ const SingleProduct = () => {
                             {/* Quantity */}
                             <div className="bg-white rounded-2xl p-6 border border-gray-200">
                                 <p className="text-sm font-bold mb-4 text-gray-900">Quantity</p>
-                                <div className="flex items-center gap-4">
-                                    <button
-                                        onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                                        className="w-12 h-12 bg-gray-100 rounded-xl hover:bg-gray-200 transition font-bold text-lg"
-                                    >
-                                        −
-                                    </button>
-                                    <span className="w-16 text-center font-bold text-xl">{quantity}</span>
-                                    <button
-                                        onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}
-                                        className="w-12 h-12 bg-gray-100 rounded-xl hover:bg-gray-200 transition font-bold text-lg"
-                                    >
-                                        +
-                                    </button>
-                                    <span className="text-sm text-gray-500 ml-2">
+                                <div className="flex items-center gap-4 flex-wrap">
+                                    <div className="flex items-center gap-4">
+                                        <button
+                                            onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                                            className="w-12 h-12 bg-gray-100 rounded-xl hover:bg-gray-200 transition font-bold text-lg"
+                                        >
+                                            −
+                                        </button>
+                                        <span className="w-16 text-center font-bold text-xl">{quantity}</span>
+                                        <button
+                                            onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}
+                                            className="w-12 h-12 bg-gray-100 rounded-xl hover:bg-gray-200 transition font-bold text-lg"
+                                        >
+                                            +
+                                        </button>
+                                    </div>
+                                    <span className="text-sm text-gray-500">
                                         ({product.stock} available)
                                     </span>
                                 </div>
@@ -449,43 +473,43 @@ const SingleProduct = () => {
                             <div className="flex gap-4 pt-2">
                                 <button
                                     onClick={handleCart}
-                                    className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white py-5 rounded-xl hover:shadow-xl hover:scale-105 transition-all duration-300 font-bold text-lg"
+                                    className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 sm:py-5 rounded-xl hover:shadow-xl hover:scale-105 transition-all duration-300 font-bold text-base sm:text-lg"
                                 >
                                     Add to Cart
                                 </button>
                                 <button
                                     onClick={handleWishList}
-                                    className="w-16 h-16 border-2 border-gray-300 rounded-xl hover:border-purple-600 hover:bg-purple-50 transition-all duration-300 flex items-center justify-center group"
+                                    className="w-14 h-14 sm:w-16 sm:h-16 border-2 border-gray-300 rounded-xl hover:border-purple-600 hover:bg-purple-50 transition-all duration-300 flex items-center justify-center group flex-shrink-0"
                                 >
-                                    <CiHeart className="text-3xl group-hover:text-purple-600 transition" />
+                                    <CiHeart className="text-2xl sm:text-3xl group-hover:text-purple-600 transition" />
                                 </button>
                             </div>
 
                             {/* Trust Badges */}
                             <div className="grid grid-cols-3 gap-3 pt-2">
-                                <div className="bg-white border border-gray-200 rounded-xl px-4 py-4 text-center">
-                                    <FaShippingFast className="text-2xl text-purple-600 mx-auto mb-2" />
-                                    <p className="text-xs font-semibold text-gray-900">{product.shippingInformation}</p>
+                                <div className="bg-white border border-gray-200 rounded-xl px-2 sm:px-4 py-4 text-center">
+                                    <FaShippingFast className="text-xl sm:text-2xl text-purple-600 mx-auto mb-2" />
+                                    <p className="text-[10px] sm:text-xs font-semibold text-gray-900 line-clamp-2">{product.shippingInformation || 'Fast Shipping'}</p>
                                 </div>
-                                <div className="bg-white border border-gray-200 rounded-xl px-4 py-4 text-center">
-                                    <FaUndo className="text-2xl text-purple-600 mx-auto mb-2" />
-                                    <p className="text-xs font-semibold text-gray-900">{product.returnPolicy}</p>
+                                <div className="bg-white border border-gray-200 rounded-xl px-2 sm:px-4 py-4 text-center">
+                                    <FaUndo className="text-xl sm:text-2xl text-purple-600 mx-auto mb-2" />
+                                    <p className="text-[10px] sm:text-xs font-semibold text-gray-900 line-clamp-2">{product.returnPolicy || 'Easy Returns'}</p>
                                 </div>
-                                <div className="bg-white border border-gray-200 rounded-xl px-4 py-4 text-center">
-                                    <FaShieldAlt className="text-2xl text-purple-600 mx-auto mb-2" />
-                                    <p className="text-xs font-semibold text-gray-900">{product.warrantyInformation}</p>
+                                <div className="bg-white border border-gray-200 rounded-xl px-2 sm:px-4 py-4 text-center">
+                                    <FaShieldAlt className="text-xl sm:text-2xl text-purple-600 mx-auto mb-2" />
+                                    <p className="text-[10px] sm:text-xs font-semibold text-gray-900 line-clamp-2">{product.warrantyInformation || 'Warranty'}</p>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     {/* Tabs Section */}
-                    <div className="mt-20 bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
-                        <div className="border-b border-gray-200">
-                            <div className="flex gap-8">
+                    <div className="mt-12 bg-white rounded-2xl border border-gray-200 shadow-sm p-4 sm:p-6">
+                        <div className="border-b border-gray-200 overflow-x-auto custom-scrollbar">
+                            <div className="flex gap-4 sm:gap-8 min-w-max sm:min-w-0">
                                 <button
                                     onClick={() => setActiveTab('description')}
-                                    className={`pb-4 px-2 text-base font-semibold transition-all duration-300 ${
+                                    className={`pb-4 px-2 text-sm sm:text-base font-semibold transition-all duration-300 whitespace-nowrap ${
                                         activeTab === 'description'
                                             ? 'border-b-4 border-purple-600 text-purple-600'
                                             : 'text-gray-600 hover:text-gray-900'
@@ -495,7 +519,7 @@ const SingleProduct = () => {
                                 </button>
                                 <button
                                     onClick={() => setActiveTab('reviews')}
-                                    className={`pb-4 px-2 text-base font-semibold transition-all duration-300 ${
+                                    className={`pb-4 px-2 text-sm sm:text-base font-semibold transition-all duration-300 whitespace-nowrap ${
                                         activeTab === 'reviews'
                                             ? 'border-b-4 border-purple-600 text-purple-600'
                                             : 'text-gray-600 hover:text-gray-900'
@@ -505,7 +529,7 @@ const SingleProduct = () => {
                                 </button>
                                 <button
                                     onClick={() => setActiveTab('shipping')}
-                                    className={`pb-4 px-2 text-base font-semibold transition-all duration-300 ${
+                                    className={`pb-4 px-2 text-sm sm:text-base font-semibold transition-all duration-300 whitespace-nowrap ${
                                         activeTab === 'shipping'
                                             ? 'border-b-4 border-purple-600 text-purple-600'
                                             : 'text-gray-600 hover:text-gray-900'
@@ -516,11 +540,11 @@ const SingleProduct = () => {
                             </div>
                         </div>
 
-                        <div className="py-8">
+                        <div className="py-6 sm:py-8">
                             {activeTab === 'description' && (
                                 <div className="max-w-4xl space-y-6 text-gray-700">
-                                    <p className="text-lg leading-relaxed">{product.description}</p>
-                                    <h3 className="font-bold text-xl text-gray-900 mt-8 mb-4">Product Details</h3>
+                                    <p className="text-base sm:text-lg leading-relaxed">{product.description}</p>
+                                    <h3 className="font-bold text-lg sm:text-xl text-gray-900 mt-8 mb-4">Product Details</h3>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         {product.weight && (
                                             <div className="bg-gray-50 rounded-xl p-4">
@@ -536,28 +560,32 @@ const SingleProduct = () => {
                                                 </p>
                                             </div>
                                         )}
-                                        <div className="bg-gray-50 rounded-xl p-4">
-                                            <p className="text-sm text-gray-500 mb-1">Warranty</p>
-                                            <p className="font-semibold">{product.warrantyInformation}</p>
-                                        </div>
-                                        <div className="bg-gray-50 rounded-xl p-4">
-                                            <p className="text-sm text-gray-500 mb-1">Shipping</p>
-                                            <p className="font-semibold">{product.shippingInformation}</p>
-                                        </div>
+                                        {product.warrantyInformation && (
+                                            <div className="bg-gray-50 rounded-xl p-4">
+                                                <p className="text-sm text-gray-500 mb-1">Warranty</p>
+                                                <p className="font-semibold">{product.warrantyInformation}</p>
+                                            </div>
+                                        )}
+                                        {product.shippingInformation && (
+                                            <div className="bg-gray-50 rounded-xl p-4">
+                                                <p className="text-sm text-gray-500 mb-1">Shipping</p>
+                                                <p className="font-semibold">{product.shippingInformation}</p>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             )}
 
                             {activeTab === 'reviews' && (
                                 <div className="max-w-4xl">
-                                    <div className="flex items-center justify-between mb-8">
+                                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
                                         <div>
-                                            <h3 className="text-2xl font-bold heading-font text-gray-900">Customer Reviews</h3>
-                                            <p className="text-gray-600 mt-1">{reviews.length} verified reviews</p>
+                                            <h3 className="text-xl sm:text-2xl font-bold heading-font text-gray-900">Customer Reviews</h3>
+                                            <p className="text-gray-600 mt-1">{reviews.length} verified {reviews.length === 1 ? 'review' : 'reviews'}</p>
                                         </div>
                                         <button
                                             onClick={() => setShowReviewForm(!showReviewForm)}
-                                            className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-xl hover:shadow-xl hover:scale-105 transition-all duration-300 font-semibold"
+                                            className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-xl hover:shadow-xl hover:scale-105 transition-all duration-300 font-semibold text-sm sm:text-base w-full sm:w-auto"
                                         >
                                             {showReviewForm ? 'Cancel' : 'Write a Review'}
                                         </button>
@@ -565,8 +593,8 @@ const SingleProduct = () => {
 
                                     {/* Review Form */}
                                     {showReviewForm && (
-                                        <div className="bg-gradient-to-br from-gray-50 to-blue-50/30 p-8 rounded-2xl mb-8 space-y-6 border border-gray-200">
-                                            <h4 className="text-lg font-bold text-gray-900">Share Your Experience</h4>
+                                        <div className="bg-gradient-to-br from-gray-50 to-blue-50/30 p-6 sm:p-8 rounded-2xl mb-8 space-y-6 border border-gray-200">
+                                            <h4 className="text-base sm:text-lg font-bold text-gray-900">Share Your Experience</h4>
                                             
                                             <div>
                                                 <label className="block text-sm font-semibold mb-3 text-gray-900">Your Name</label>
@@ -587,7 +615,7 @@ const SingleProduct = () => {
                                                             key={star}
                                                             type="button"
                                                             onClick={() => setNewReview({...newReview, rating: star})}
-                                                            className="text-3xl transition-transform hover:scale-110"
+                                                            className="text-2xl sm:text-3xl transition-transform hover:scale-110"
                                                         >
                                                             <FaStar className={star <= newReview.rating ? 'text-yellow-400' : 'text-gray-300'} />
                                                         </button>
@@ -607,7 +635,7 @@ const SingleProduct = () => {
 
                                             <button
                                                 onClick={handleReviewSubmit}
-                                                className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-xl hover:shadow-xl hover:scale-105 transition-all duration-300 font-bold"
+                                                className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-xl hover:shadow-xl hover:scale-105 transition-all duration-300 font-bold w-full sm:w-auto"
                                             >
                                                 Submit Review
                                             </button>
@@ -617,18 +645,18 @@ const SingleProduct = () => {
                                     {/* Reviews List */}
                                     <div className="space-y-6">
                                         {reviews.map((review) => (
-                                            <div key={review.id} className="bg-white border border-gray-200 rounded-2xl p-6">
-                                                <div className="flex items-start justify-between mb-4">
-                                                    <div>
-                                                        <div className="flex items-center gap-3 mb-2">
+                                            <div key={review.id} className="bg-white border border-gray-200 rounded-2xl p-4 sm:p-6">
+                                                <div className="flex items-start justify-between mb-4 gap-4">
+                                                    <div className="flex-1 min-w-0">
+                                                        <div className="flex items-center gap-3 mb-2 flex-wrap">
                                                             <p className="font-bold text-gray-900">{review.name}</p>
                                                             {review.verified && (
-                                                                <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full font-semibold">
+                                                                <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full font-semibold whitespace-nowrap">
                                                                     ✓ Verified Purchase
                                                                 </span>
                                                             )}
                                                         </div>
-                                                        <div className="flex items-center gap-3">
+                                                        <div className="flex items-center gap-3 flex-wrap">
                                                             <div className="flex gap-1 text-yellow-400">
                                                                 {[...Array(5)].map((_, i) => (
                                                                     <FaStar key={i} className={i < review.rating ? '' : 'text-gray-300'} size={16} />
@@ -638,7 +666,7 @@ const SingleProduct = () => {
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <p className="text-gray-700 leading-relaxed">{review.comment}</p>
+                                                <p className="text-gray-700 leading-relaxed text-sm sm:text-base">{review.comment}</p>
                                             </div>
                                         ))}
                                     </div>
@@ -648,32 +676,32 @@ const SingleProduct = () => {
                             {activeTab === 'shipping' && (
                                 <div className="max-w-4xl space-y-8">
                                     <div>
-                                        <h3 className="font-bold text-xl text-gray-900 mb-4">Shipping Information</h3>
-                                        <p className="text-gray-700 mb-6 leading-relaxed">{product.shippingInformation}</p>
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <h3 className="font-bold text-lg sm:text-xl text-gray-900 mb-4">Shipping Information</h3>
+                                        <p className="text-gray-700 mb-6 leading-relaxed text-sm sm:text-base">{product.shippingInformation || 'Standard shipping available'}</p>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                             <div className="bg-gradient-to-br from-blue-50 to-purple-50/30 rounded-xl p-5 border border-gray-200">
-                                                <FaShippingFast className="text-3xl text-purple-600 mb-3" />
-                                                <p className="font-semibold text-gray-900 mb-1">Free Shipping</p>
-                                                <p className="text-sm text-gray-600">On orders over $50</p>
+                                                <FaShippingFast className="text-2xl sm:text-3xl text-purple-600 mb-3" />
+                                                <p className="font-semibold text-gray-900 mb-1 text-sm sm:text-base">Free Shipping</p>
+                                                <p className="text-xs sm:text-sm text-gray-600">On orders over $50</p>
                                             </div>
                                             <div className="bg-gradient-to-br from-blue-50 to-purple-50/30 rounded-xl p-5 border border-gray-200">
-                                                <p className="font-semibold text-gray-900 mb-1">Standard Delivery</p>
-                                                <p className="text-sm text-gray-600">5-7 business days</p>
+                                                <p className="font-semibold text-gray-900 mb-1 text-sm sm:text-base">Standard Delivery</p>
+                                                <p className="text-xs sm:text-sm text-gray-600">5-7 business days</p>
                                             </div>
                                             <div className="bg-gradient-to-br from-blue-50 to-purple-50/30 rounded-xl p-5 border border-gray-200">
-                                                <p className="font-semibold text-gray-900 mb-1">Express Delivery</p>
-                                                <p className="text-sm text-gray-600">2-3 business days</p>
+                                                <p className="font-semibold text-gray-900 mb-1 text-sm sm:text-base">Express Delivery</p>
+                                                <p className="text-xs sm:text-sm text-gray-600">2-3 business days</p>
                                             </div>
                                             <div className="bg-gradient-to-br from-blue-50 to-purple-50/30 rounded-xl p-5 border border-gray-200">
-                                                <p className="font-semibold text-gray-900 mb-1">International</p>
-                                                <p className="text-sm text-gray-600">Worldwide shipping available</p>
+                                                <p className="font-semibold text-gray-900 mb-1 text-sm sm:text-base">International</p>
+                                                <p className="text-xs sm:text-sm text-gray-600">Worldwide shipping available</p>
                                             </div>
                                         </div>
                                     </div>
                                     
                                     <div>
-                                        <h3 className="font-bold text-xl text-gray-900 mb-4">Return Policy</h3>
-                                        <p className="text-gray-700 leading-relaxed">{product.returnPolicy}</p>
+                                        <h3 className="font-bold text-lg sm:text-xl text-gray-900 mb-4">Return Policy</h3>
+                                        <p className="text-gray-700 leading-relaxed text-sm sm:text-base">{product.returnPolicy || '30-day return policy for all items'}</p>
                                     </div>
                                 </div>
                             )}
