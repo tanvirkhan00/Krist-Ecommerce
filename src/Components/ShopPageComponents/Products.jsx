@@ -4,7 +4,7 @@ import 'react-responsive-pagination/themes/classic.css';
 import { apiData } from '../ContextApi';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { getAuth } from 'firebase/auth';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { addToCart, WishList } from '../Slice/productSlice.jsx';
 
 // Icons
@@ -23,15 +23,39 @@ const Products = () => {
   const [showMobileFilters, setShowMobileFilters] = useState(false);
   const [authError, setAuthError] = useState('');
   const [showAuthModal, setShowAuthModal] = useState(false);
-  const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
+  const [viewMode, setViewMode] = useState('grid');
   const [successToast, setSuccessToast] = useState({ show: false, message: '' });
   const [hoveredProduct, setHoveredProduct] = useState(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Get current user from Redux state
+  // ✅ FIX: Authentication state management
+  const [currentUser, setCurrentUser] = useState(null);
+  const [authLoading, setAuthLoading] = useState(true);
+
+  // Get current user from Redux state (optional, for compatibility)
   const account = useSelector((state) => state.product.Account);
+
+  // ✅ FIX: Listen to Firebase auth state changes
+  useEffect(() => {
+    const auth = getAuth();
+    
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      console.log('🔐 Auth State Changed:', {
+        hasUser: !!user,
+        email: user?.email,
+        emailVerified: user?.emailVerified,
+        uid: user?.uid
+      });
+      
+      setCurrentUser(user);
+      setAuthLoading(false);
+    });
+
+    // Cleanup subscription on unmount
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     setCategory([...new Set(products.map((item) => item.category))]);
@@ -87,31 +111,44 @@ const Products = () => {
     }
   });
 
-  // Check Authentication
+  // ✅ FIX: Updated authentication check
   const checkAuth = () => {
-    const auth = getAuth();
-    const user = auth.currentUser;
+    console.log('🔍 Checking Auth:', {
+      authLoading,
+      hasUser: !!currentUser,
+      email: currentUser?.email,
+      emailVerified: currentUser?.emailVerified
+    });
+
+    // Wait for auth to load
+    if (authLoading) {
+      console.log('⏳ Auth still loading...');
+      return false;
+    }
     
-    if (!user) {
+    // Check if user is logged in
+    if (!currentUser) {
+      console.log('❌ User not authenticated');
       setAuthError('Please log in to continue');
       setShowAuthModal(true);
       return false;
     }
     
-    if (!user.emailVerified) {
-      setAuthError('Please verify your email to continue');
-      setShowAuthModal(true);
-      return false;
-    }
-    
+    console.log('✅ Auth check passed!');
     return true;
   };
 
   // Add to Cart with Authentication Check
   const handleCart = (itemId, e) => {
     e?.stopPropagation();
-    if (!checkAuth()) return;
     
+    console.log('🛒 Add to cart clicked for:', itemId.title);
+    if (!checkAuth()) {
+      console.log('❌ Auth check failed');
+      return;
+    }
+    
+    console.log('✅ Adding to cart');
     dispatch(addToCart({ ...itemId, qty: 1 }));
     showSuccessToast('Added to cart');
   };
@@ -119,8 +156,14 @@ const Products = () => {
   // Add to Wishlist with Authentication Check
   const handleWishList = (itemId, e) => {
     e?.stopPropagation();
-    if (!checkAuth()) return;
     
+    console.log('❤️ Add to wishlist clicked for:', itemId.title);
+    if (!checkAuth()) {
+      console.log('❌ Auth check failed');
+      return;
+    }
+    
+    console.log('✅ Adding to wishlist');
     dispatch(WishList({ ...itemId, qty: 1 }));
     showSuccessToast('Added to wishlist');
   };
@@ -151,6 +194,18 @@ const Products = () => {
   const paginatedProducts = sortedProducts.slice(startIndex, endIndex);
 
   const activeFiltersCount = selectedCategories.length + (priceRange.max < 40000 ? 1 : 0);
+
+  // ✅ FIX: Show loading state while checking auth
+  if (authLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-4 border-purple-600 border-t-transparent mx-auto"></div>
+          <p className="mt-6 text-gray-600 font-medium">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <section className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30 py-8 mt-[150px]">
@@ -296,6 +351,16 @@ const Products = () => {
           <p className="text-gray-600 text-lg max-w-2xl mx-auto">
             Explore {products.length} carefully curated products for every style and occasion
           </p>
+          
+          {/* Debug Info - Remove in production */}
+          {process.env.NODE_ENV === 'development' && currentUser && (
+            <div className="mt-4 text-sm bg-green-50 border border-green-200 rounded-lg px-4 py-2 inline-block">
+              <span className="text-green-700">
+                ✅ Logged in as: {currentUser.email} 
+                {currentUser.emailVerified ? ' (Verified)' : ' (Not Verified)'}
+              </span>
+            </div>
+          )}
         </div>
 
         <div className="flex gap-8 relative">

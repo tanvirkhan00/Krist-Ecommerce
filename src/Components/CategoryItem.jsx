@@ -1,6 +1,6 @@
-import React, { useContext, useState, useMemo } from 'react';
+import React, { useContext, useState, useMemo, useEffect } from 'react';
 import { apiData } from './ContextApi';
-import { useParams, useNavigate } from 'react-router';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 
 // Icons
@@ -11,7 +11,7 @@ import { HiOutlineAdjustmentsHorizontal, HiMiniSparkles } from "react-icons/hi2"
 import { BsGrid3X3Gap, BsList } from "react-icons/bs";
 import { useDispatch, useSelector } from 'react-redux';
 import { addToCart, WishList } from './Slice/productSlice';
-import { getAuth } from 'firebase/auth';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
 const CategoryItem = () => {
     const product = useContext(apiData);
@@ -23,7 +23,7 @@ const CategoryItem = () => {
     const [sortBy, setSortBy] = useState('featured');
     const [priceRange, setPriceRange] = useState([0, 10000]);
     const [selectedBrands, setSelectedBrands] = useState([]);
-    const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
+    const [viewMode, setViewMode] = useState('grid');
     const [showMobileFilters, setShowMobileFilters] = useState(false);
     const [showSortDropdown, setShowSortDropdown] = useState(false);
     const [authError, setAuthError] = useState('');
@@ -32,8 +32,32 @@ const CategoryItem = () => {
     const [hoveredProduct, setHoveredProduct] = useState(null);
     const [inStockOnly, setInStockOnly] = useState(false);
 
+    // ✅ FIX: Authentication state management
+    const [currentUser, setCurrentUser] = useState(null);
+    const [authLoading, setAuthLoading] = useState(true);
+
     // Import Account
     const account = useSelector((state) => state.product.Account);
+
+    // ✅ FIX: Listen to Firebase auth state changes
+    useEffect(() => {
+        const auth = getAuth();
+        
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            console.log('🔐 Auth State Changed (CategoryItem):', {
+                hasUser: !!user,
+                email: user?.email,
+                emailVerified: user?.emailVerified,
+                uid: user?.uid
+            });
+            
+            setCurrentUser(user);
+            setAuthLoading(false);
+        });
+
+        // Cleanup subscription on unmount
+        return () => unsubscribe();
+    }, []);
 
     // Filter products by category
     const categoryItem = product.filter((item) => item.category === categoryName);
@@ -101,31 +125,44 @@ const CategoryItem = () => {
         }, 3000);
     };
 
-    // Check Authentication
+    // ✅ FIX: Updated authentication check
     const checkAuth = () => {
-        const auth = getAuth();
-        const user = auth.currentUser;
+        console.log('🔍 Checking Auth (CategoryItem):', {
+            authLoading,
+            hasUser: !!currentUser,
+            email: currentUser?.email,
+            emailVerified: currentUser?.emailVerified
+        });
+
+        // Wait for auth to load
+        if (authLoading) {
+            console.log('⏳ Auth still loading...');
+            return false;
+        }
         
-        if (!user) {
+        // Check if user is logged in
+        if (!currentUser) {
+            console.log('❌ User not authenticated');
             setAuthError('Please log in to continue');
             setShowAuthModal(true);
             return false;
         }
         
-        if (!user.emailVerified) {
-            setAuthError('Please verify your email to continue');
-            setShowAuthModal(true);
-            return false;
-        }
-        
+        console.log('✅ Auth check passed!');
         return true;
     };
 
     // Cart handler with Authentication
     const handleCart = (itemId, e) => {
         e?.stopPropagation();
-        if (!checkAuth()) return;
         
+        console.log('🛒 Add to cart clicked for:', itemId.title);
+        if (!checkAuth()) {
+            console.log('❌ Auth check failed');
+            return;
+        }
+        
+        console.log('✅ Adding to cart');
         dispatch(addToCart({ ...itemId, qty: 1 }));
         showSuccessToast('Added to cart');
     };
@@ -133,8 +170,14 @@ const CategoryItem = () => {
     // WishList handler with Authentication
     const handleWishList = (itemId, e) => {
         e?.stopPropagation();
-        if (!checkAuth()) return;
         
+        console.log('❤️ Add to wishlist clicked for:', itemId.title);
+        if (!checkAuth()) {
+            console.log('❌ Auth check failed');
+            return;
+        }
+        
+        console.log('✅ Adding to wishlist');
         dispatch(WishList({ ...itemId, qty: 1 }));
         showSuccessToast('Added to wishlist');
     };
@@ -172,12 +215,13 @@ const CategoryItem = () => {
         (priceRange[0] > 0 || priceRange[1] < 10000 ? 1 : 0) + 
         (inStockOnly ? 1 : 0);
 
-    if (!product || product.length === 0) {
+    // ✅ FIX: Show loading state while checking auth
+    if (authLoading || !product || product.length === 0) {
         return (
             <div className='flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30'>
                 <div className='text-center'>
                     <div className='animate-spin rounded-full h-16 w-16 border-4 border-purple-600 border-t-transparent mx-auto'></div>
-                    <p className='mt-6 text-gray-600 font-medium'>Loading products...</p>
+                    <p className='mt-6 text-gray-600 font-medium'>Loading...</p>
                 </div>
             </div>
         );
@@ -443,6 +487,16 @@ const CategoryItem = () => {
                             </p>
                         </div>
                     </div>
+
+                    {/* Debug Info - Remove in production */}
+                    {process.env.NODE_ENV === 'development' && currentUser && (
+                        <div className="mt-4 text-sm bg-green-50 border border-green-200 rounded-lg px-4 py-2 inline-block">
+                            <span className="text-green-700">
+                                ✅ Logged in as: {currentUser.email} 
+                                {currentUser.emailVerified ? ' (Verified)' : ' (Not Verified)'}
+                            </span>
+                        </div>
+                    )}
                 </div>
             </div>
 

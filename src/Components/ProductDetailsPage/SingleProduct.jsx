@@ -1,10 +1,10 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { apiData } from '../ContextApi';
 import RelatedProducts from '../ProductDetailsPage/RelatedProducts';
 import { useDispatch } from 'react-redux';
 import { addToCart, WishList } from '../Slice/productSlice';
-import { getAuth } from 'firebase/auth';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
 // Icons
 import { FaStar, FaShippingFast, FaUndo, FaShieldAlt } from "react-icons/fa";
@@ -24,6 +24,10 @@ const SingleProduct = () => {
     const [showAuthModal, setShowAuthModal] = useState(false);
     const [successToast, setSuccessToast] = useState({ show: false, message: '' });
     const [selectedImage, setSelectedImage] = useState(0);
+    
+    // ✅ FIX: Authentication state management
+    const [currentUser, setCurrentUser] = useState(null);
+    const [authLoading, setAuthLoading] = useState(true);
     
     // Review States
     const [reviews, setReviews] = useState([
@@ -66,6 +70,26 @@ const SingleProduct = () => {
     const [selectedSize, setSelectedSize] = useState('');
     const [quantity, setQuantity] = useState(1);
 
+    // ✅ FIX: Listen to Firebase auth state changes
+    useEffect(() => {
+        const auth = getAuth();
+        
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            console.log('🔐 Auth State Changed (SingleProduct):', {
+                hasUser: !!user,
+                email: user?.email,
+                emailVerified: user?.emailVerified,
+                uid: user?.uid
+            });
+            
+            setCurrentUser(user);
+            setAuthLoading(false);
+        });
+
+        // Cleanup subscription on unmount
+        return () => unsubscribe();
+    }, []);
+
     // Show success toast
     const showSuccessToast = (message) => {
         setSuccessToast({ show: true, message });
@@ -74,23 +98,33 @@ const SingleProduct = () => {
         }, 3000);
     };
 
-    // Check Authentication
+    // ✅ FIX: Updated authentication check (NO EMAIL VERIFICATION REQUIRED)
     const checkAuth = () => {
-        const auth = getAuth();
-        const user = auth.currentUser;
+        console.log('🔍 Checking Auth (SingleProduct):', {
+            authLoading,
+            hasUser: !!currentUser,
+            email: currentUser?.email,
+            emailVerified: currentUser?.emailVerified
+        });
+
+        // Wait for auth to load
+        if (authLoading) {
+            console.log('⏳ Auth still loading...');
+            return false;
+        }
         
-        if (!user) {
+        // Check if user is logged in
+        if (!currentUser) {
+            console.log('❌ User not authenticated');
             setAuthError('Please log in to continue');
             setShowAuthModal(true);
             return false;
         }
         
-        if (!user.emailVerified) {
-            setAuthError('Please verify your email to continue');
-            setShowAuthModal(true);
-            return false;
-        }
+        // ✅ REMOVED: Email verification check
+        // Users can now shop without verifying their email
         
+        console.log('✅ Auth check passed!');
         return true;
     };
 
@@ -106,12 +140,12 @@ const SingleProduct = () => {
     };
 
     // Loading State
-    if (!products || products.length === 0) {
+    if (authLoading || !products || products.length === 0) {
         return (
             <div className='flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30'>
                 <div className='text-center'>
                     <div className='animate-spin rounded-full h-16 w-16 border-4 border-purple-600 border-t-transparent mx-auto'></div>
-                    <p className='mt-6 text-gray-600 font-medium'>Loading product...</p>
+                    <p className='mt-6 text-gray-600 font-medium'>Loading...</p>
                 </div>
             </div>
         );
@@ -144,16 +178,26 @@ const SingleProduct = () => {
 
     // Add Cart with Authentication
     const handleCart = () => {
-        if (!checkAuth()) return;
+        console.log('🛒 Add to cart clicked');
+        if (!checkAuth()) {
+            console.log('❌ Auth check failed');
+            return;
+        }
         
+        console.log('✅ Adding to cart');
         dispatch(addToCart({ ...product, qty: quantity }));
         showSuccessToast(`${quantity} ${quantity > 1 ? 'items' : 'item'} added to cart`);
     };
 
     // WishList with Authentication
     const handleWishList = () => {
-        if (!checkAuth()) return;
+        console.log('❤️ Add to wishlist clicked');
+        if (!checkAuth()) {
+            console.log('❌ Auth check failed');
+            return;
+        }
         
+        console.log('✅ Adding to wishlist');
         dispatch(WishList({ ...product, qty: 1 }));
         showSuccessToast('Added to wishlist');
     };
@@ -309,6 +353,15 @@ const SingleProduct = () => {
                         <span>/</span>
                         <span className="text-gray-900 font-semibold truncate max-w-[200px] sm:max-w-none">{product.title}</span>
                     </div>
+
+                    {/* Debug Info - Remove in production */}
+                    {process.env.NODE_ENV === 'development' && currentUser && (
+                        <div className="mb-4 text-sm bg-green-50 border border-green-200 rounded-lg px-4 py-2 inline-block">
+                            <span className="text-green-700">
+                                ✅ Logged in as: {currentUser.email}
+                            </span>
+                        </div>
+                    )}
 
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 mb-12">
                         {/* Product Images */}
